@@ -1,0 +1,20 @@
+# Node (React / Angular)
+node_modules/
+dist/
+.env
+
+# Java (Spring Boot)
+target/
+*.jar
+
+# Python (FastAPI & AI)
+__pycache__/
+.venv/
+venv/
+*.pth
+*.pt
+
+# IDEs / OS
+.vscode/
+.idea/
+.DS_Store
