@@ -1,0 +1,12 @@
+.dashboard {
+  h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.75rem;
+    color: var(--mat-sys-on-surface);
+  }
+
+  .muted {
+    margin: 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

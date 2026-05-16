@@ -1,0 +1,153 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$green-palette,
+        tertiary: mat.$yellow-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+
+  --mat-sys-primary: #e4e4e7;
+  --mat-sys-on-primary: #0a0a0a;
+
+  --mat-sys-surface: #0a0a0a;
+  --mat-sys-surface-container: #18181b;
+  --mat-sys-surface-container-high: #27272a;
+  --mat-sys-surface-container-highest: #303034;
+  --mat-sys-outline: #52525b;
+  --mat-sys-outline-variant: #27272a;
+  --mat-sys-on-surface: #fafafa;
+  --mat-sys-on-surface-variant: #a1a1aa;
+
+  --app-accent: #a78bfa;
+  --app-accent-on: #1e1b4b;
+}
+
+body {
+  color-scheme: dark;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  font-family:
+    'Segoe UI',
+    Roboto,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Helvetica Neue',
+    sans-serif;
+  margin: 0;
+  min-height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --app-success-bg: color-mix(in srgb, #577e65 18%, transparent);
+  --app-success-text: #577e65;
+  --app-success-border: color-mix(in srgb, #577e65 40%, transparent);
+}
+
+.app-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: color-mix(in srgb, var(--mat-sys-on-surface-variant) 75%, transparent);
+  letter-spacing: 1.5px;
+}
+
+.app-input {
+  padding: 0.6rem 0.85rem;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 45%, transparent);
+  background: color-mix(in srgb, var(--mat-sys-surface-container-highest) 35%, transparent);
+  color: var(--mat-sys-on-surface);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--mat-sys-outline-variant) 65%, transparent);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--mat-sys-on-surface-variant) 35%, transparent);
+    background: color-mix(in srgb, var(--mat-sys-surface-container-highest) 50%, transparent);
+  }
+
+  &::placeholder {
+    color: var(--mat-sys-on-surface-variant);
+    letter-spacing: normal;
+  }
+}
+
+.app-input-hint {
+  color: var(--mat-sys-error);
+  font-size: 0.75rem;
+  letter-spacing: normal;
+}
+
+.app-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--mat-sys-on-surface);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.app-btn-primary {
+  background: color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
+  color: var(--mat-sys-primary);
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--mat-sys-primary) 38%, transparent);
+  }
+
+  &:disabled {
+    background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+    color: color-mix(in srgb, var(--mat-sys-primary) 45%, transparent);
+  }
+}
+
+.app-btn-secondary {
+  border-color: var(--mat-sys-outline-variant);
+  color: var(--mat-sys-on-surface-variant);
+  font-weight: 500;
+
+  &:hover:not(:disabled) {
+    border-color: var(--mat-sys-on-surface-variant);
+    color: var(--mat-sys-on-surface);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}

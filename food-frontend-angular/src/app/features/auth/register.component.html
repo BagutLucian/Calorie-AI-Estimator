@@ -1,0 +1,91 @@
+<div class="logo">
+  <span class="logo-mark">C</span>
+  <span class="logo-text">Calorie AI</span>
+</div>
+
+<h2 class="form-title">Register</h2>
+
+<form #form="ngForm" class="auth-form" (ngSubmit)="submit(form)" novalidate>
+  <label class="app-field">
+    <span>Username</span>
+    <input
+      class="app-input"
+      type="text"
+      name="username"
+      autocomplete="username"
+      [(ngModel)]="username"
+      required
+      minlength="3"
+    />
+  </label>
+
+  <label class="app-field">
+    <span>Password</span>
+    <input
+      class="app-input"
+      type="password"
+      name="password"
+      autocomplete="new-password"
+      [(ngModel)]="password"
+      required
+    />
+  </label>
+
+  <label class="app-field">
+    <span>Confirm password</span>
+    <input
+      class="app-input"
+      type="password"
+      name="confirmPassword"
+      autocomplete="new-password"
+      [(ngModel)]="confirmPassword"
+      required
+    />
+    @if (passwordMismatch()) {
+      <small class="app-input-hint">Passwords do not match.</small>
+    }
+  </label>
+
+  <ul
+    class="password-rules"
+    [class.visible]="password.length > 0"
+    aria-label="Password requirements"
+  >
+    @for (rule of passwordRules; track rule.key) {
+      <li [class.met]="passes(rule)">
+        <span class="marker" aria-hidden="true">{{ passes(rule) ? '✓' : '•' }}</span>
+        {{ rule.label }}
+      </li>
+    }
+  </ul>
+
+  @if (errorMessage(); as msg) {
+    <p class="error" role="alert">{{ msg }}</p>
+  }
+  @if (successMessage(); as msg) {
+    <p class="success" role="status">{{ msg }}</p>
+  }
+
+  <div class="actions">
+    <button
+      type="button"
+      class="app-btn app-btn-secondary"
+      (click)="cancelled.emit()"
+      [disabled]="loading()"
+    >
+      Cancel
+    </button>
+    <button
+      type="submit"
+      class="app-btn app-btn-primary"
+      [disabled]="form.invalid || !passwordValid() || passwordMismatch() || loading()"
+    >
+      {{ loading() ? 'Creating…' : 'Register' }}
+    </button>
+  </div>
+
+  <p class="alt">
+    Already have an account?
+    <button type="button" class="link ps-1" (click)="switchToLogin.emit()">Log in</button>
+  </p>
+</form>

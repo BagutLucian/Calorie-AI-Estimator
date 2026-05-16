@@ -1,0 +1,45 @@
+<div class="logo">
+  <span class="logo-mark">C</span>
+  <span class="logo-text">Calorie AI</span>
+</div>
+
+<h2 class="form-title">Log in</h2>
+
+<form #form="ngForm" class="auth-form" (ngSubmit)="submit(form)" novalidate>
+  <label class="app-field">
+    <span>Username</span>
+    <input
+      class="app-input"
+      type="text"
+      name="username"
+      autocomplete="username"
+      [(ngModel)]="username"
+      required
+    />
+  </label>
+
+  <label class="app-field">
+    <span>Password</span>
+    <input
+      class="app-input"
+      type="password"
+      name="password"
+      autocomplete="current-password"
+      [(ngModel)]="password"
+      required      
+    />
+  </label>
+
+  @if (errorMessage(); as msg) {
+    <p class="error" role="alert">{{ msg }}</p>
+  }
+
+  <button type="submit" class="app-btn app-btn-primary" [disabled]="form.invalid || loading()">
+    {{ loading() ? 'Signing in…' : 'Sign In' }}
+  </button>
+
+  <p class="alt">
+    Don't have an account?
+    <button type="button" class="link ms-1" (click)="switchToRegister.emit()">Register</button>
+  </p>
+</form>

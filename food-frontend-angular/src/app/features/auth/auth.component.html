@@ -1,0 +1,13 @@
+<section class="auth-shell">
+  <div class="auth-card">
+    @if (mode() === 'login') {
+      <app-login (switchToRegister)="switchTo('register')" />
+    } @else {
+      <app-register
+        (registered)="switchTo('login')"
+        (switchToLogin)="switchTo('login')"
+        (cancelled)="switchTo('login')"
+      />
+    }
+  </div>
+</section>
