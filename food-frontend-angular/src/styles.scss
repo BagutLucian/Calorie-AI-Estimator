@@ -151,3 +151,74 @@ body {
     opacity: 0.5;
   }
 }
+
+.app-user-menu.mat-mdc-menu-panel {
+  --mat-menu-item-label-text-size: 0.8rem;
+  --mat-menu-item-label-text-weight: 500;
+  --mat-menu-item-label-text-color: color-mix(in srgb, var(--mat-sys-on-surface) 80%, transparent);
+  --mat-menu-item-icon-color: color-mix(in srgb, var(--mat-sys-on-surface-variant) 85%, transparent);
+  --mat-menu-item-icon-size: 1.1rem;
+
+  .mat-mdc-menu-item {
+    min-height: 36px;
+
+    .mat-mdc-menu-item-text {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: color-mix(in srgb, var(--mat-sys-on-surface) 80%, transparent);
+      letter-spacing: 0.2px;
+    }
+
+    .mat-icon {
+      font-size: 1.1rem;
+      width: 1.1rem;
+      height: 1.1rem;
+      color: color-mix(in srgb, var(--mat-sys-on-surface-variant) 85%, transparent);
+    }
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface);
+  line-height: 1;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Menlo, Consolas, monospace;
+
+  &.brand-lg {
+    .brand-mark {
+      font-size: 22px;
+    }
+
+    .brand-accent {
+      font-size: 36px;
+    }
+  }
+
+  .brand-mark {
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--mat-sys-on-surface);
+    font-size: 16px;
+  }
+
+  .brand-accent {
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding-left: 2px;
+    background: linear-gradient(
+      120deg,
+      #4f46e5 0%,
+      var(--app-accent) 50%,
+      #ec4899 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-size: 24px;
+  }
+}

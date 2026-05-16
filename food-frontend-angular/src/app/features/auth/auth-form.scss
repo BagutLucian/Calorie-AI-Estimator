@@ -2,32 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
   margin-bottom: 1.75rem;
-
-  .logo-mark {
-    width: 36px;
-    height: 36px;
-    border-radius: 4px;
-    background: linear-gradient(
-      135deg,
-      var(--app-accent),
-      color-mix(in srgb, var(--app-accent) 55%, black)
-    );
-    color: var(--app-accent-on);
-    display: grid;
-    place-items: center;
-    font-weight: 600;
-    font-size: 1.05rem;
-    letter-spacing: -0.5px;
-  }
-
-  .logo-text {
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: var(--mat-sys-on-surface);
-    letter-spacing: 0.5px;
-  }
 }
 
 .form-title {

@@ -1,13 +1,43 @@
 <header class="app-header">
-  <a routerLink="/dashboard" class="brand">Calorie AI</a>
+  <a routerLink="/home" class="brand">
+    <span class="brand-mark">Calorie</span>
+    <span class="brand-accent">AI</span>
+  </a>
 
-  <nav class="nav">
-    <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+  <nav class="nav-island">
+    <a
+      routerLink="/home"
+      routerLinkActive="active"
+      class="nav-item nav-item-icon"
+      matTooltip="Home"
+      matTooltipPosition="below"
+      aria-label="Home"
+    >
+      <mat-icon>home</mat-icon>
+    </a>
   </nav>
 
   <div class="user">
-    <div class="avatar" aria-hidden="true">{{ initials() }}</div>
-    <span class="name">{{ username() }}</span>
-    <button type="button" class="logout" (click)="logout()">Logout</button>
+    <button
+      type="button"
+      class="user-trigger"
+      [matMenuTriggerFor]="userMenu"
+      aria-label="User menu"
+    >
+      <div class="avatar" aria-hidden="true">{{ initials() }}</div>
+      <span class="name">{{ username() }}</span>
+      <mat-icon class="caret">expand_more</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" xPosition="before" class="app-user-menu">
+      <button mat-menu-item routerLink="/profile">
+        <mat-icon>person</mat-icon>
+        <span>My profile</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Log out</span>
+      </button>
+    </mat-menu>
   </div>
 </header>

@@ -3,13 +3,13 @@ import { Component, inject } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-profile',
   standalone: true,
   imports: [],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.scss'
 })
-export class DashboardComponent {
+export class ProfileComponent {
   private readonly auth = inject(AuthService);
   readonly username = this.auth.username;
 }

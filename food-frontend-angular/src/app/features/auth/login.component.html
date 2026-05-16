@@ -1,6 +1,8 @@
 <div class="logo">
-  <span class="logo-mark">C</span>
-  <span class="logo-text">Calorie AI</span>
+  <span class="brand brand-lg">
+    <span class="brand-mark">Calorie</span>
+    <span class="brand-accent">AI</span>
+  </span>
 </div>
 
 <h2 class="form-title">Log in</h2>
@@ -34,7 +36,7 @@
     <p class="error" role="alert">{{ msg }}</p>
   }
 
-  <button type="submit" class="app-btn app-btn-primary" [disabled]="form.invalid || loading()">
+  <button type="submit" class="app-btn app-btn-primary mt-4" [disabled]="form.invalid || loading()">
     {{ loading() ? 'Signing in…' : 'Sign In' }}
   </button>
 
