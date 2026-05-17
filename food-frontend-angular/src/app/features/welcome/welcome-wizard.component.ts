@@ -1,8 +1,8 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
-import { AuthService } from '../../core/services/auth.service';
 import { CalorieCalculatorService } from '../../core/services/calorie-calculator.service';
 import { ProfileService } from '../../core/services/profile.service';
 import {
@@ -40,18 +40,19 @@ interface MacrosOption {
 }
 
 @Component({
-  selector: 'app-profile',
+  selector: 'app-welcome-wizard',
   standalone: true,
   imports: [FormsModule, DecimalPipe],
-  templateUrl: './profile.component.html',
-  styleUrl: './profile.component.scss'
+  templateUrl: './welcome-wizard.component.html',
+  styleUrl: './welcome-wizard.component.scss'
 })
-export class ProfileComponent {
-  private readonly auth = inject(AuthService);
+export class WelcomeWizardComponent {
   private readonly profileService = inject(ProfileService);
   private readonly calculator = inject(CalorieCalculatorService);
+  private readonly router = inject(Router);
 
-  readonly username = this.auth.username;
+  readonly totalSteps = 5;
+  readonly step = signal(1);
 
   readonly gender = signal<Gender | null>(null);
   readonly age = signal<number | null>(null);
@@ -64,7 +65,6 @@ export class ProfileComponent {
   readonly macrosPreset = signal<MacrosPreset>('STANDARD');
 
   readonly loading = signal(false);
-  readonly savedAt = signal<number | null>(null);
   readonly errorMessage = signal<string | null>(null);
 
   readonly activityOptions: ReadonlyArray<ActivityOption> = [
@@ -99,6 +99,8 @@ export class ProfileComponent {
     return g !== null && g !== 'MAINTAIN';
   });
 
+  readonly progress = computed(() => (this.step() / this.totalSteps) * 100);
+
   readonly bmr = computed(() =>
     this.calculator.bmr(this.gender(), this.weight(), this.height(), this.age())
   );
@@ -129,35 +131,54 @@ export class ProfileComponent {
     };
   });
 
-  readonly canSave = computed(() =>
-    this.gender() !== null &&
-    this.age() != null && this.age()! > 0 &&
-    this.weight() != null && this.weight()! > 0 &&
-    this.height() != null && this.height()! > 0 &&
-    this.activityLevel() !== null &&
-    this.goal() !== null &&
-    (this.goal() === 'MAINTAIN' || this.goalRate() !== null)
-  );
-
-  constructor() {
-    effect(() => {
-      const profile = this.profileService.profile();
-      if (!profile) return;
-      this.gender.set(profile.gender);
-      this.age.set(profile.age);
-      this.height.set(profile.height);
-      this.weight.set(profile.weight);
-      this.activityLevel.set(profile.activityLevel);
-      this.goal.set(profile.goal);
-      this.goalRate.set(profile.goalRate);
-      this.targetWeight.set(profile.targetWeight);
-      const preset = this.detectPreset(profile.proteinPct, profile.carbPct, profile.fatPct);
-      this.macrosPreset.set(preset);
-    });
-
-    if (!this.profileService.profile()) {
-      this.profileService.load().subscribe();
+  canAdvance(): boolean {
+    switch (this.step()) {
+      case 1:
+        return true;
+      case 2:
+        return (
+          this.gender() !== null &&
+          this.age() != null &&
+          this.age()! > 0 &&
+          this.weight() != null &&
+          this.weight()! > 0 &&
+          this.height() != null &&
+          this.height()! > 0
+        );
+      case 3:
+        return this.activityLevel() !== null;
+      case 4: {
+        const g = this.goal();
+        if (g === null) return false;
+        if (g === 'MAINTAIN') return true;
+        return this.goalRate() !== null;
+      }
+      case 5:
+        return true;
+      default:
+        return false;
     }
+  }
+
+  canSubmit(): boolean {
+    return (
+      this.gender() !== null &&
+      this.age() != null &&
+      this.weight() != null &&
+      this.height() != null &&
+      this.activityLevel() !== null &&
+      this.goal() !== null &&
+      (this.goal() === 'MAINTAIN' || this.goalRate() !== null)
+    );
+  }
+
+  next(): void {
+    if (!this.canAdvance()) return;
+    this.step.update((s) => Math.min(s + 1, this.totalSteps));
+  }
+
+  back(): void {
+    this.step.update((s) => Math.max(s - 1, 1));
   }
 
   selectGender(g: Gender): void {
@@ -176,6 +197,18 @@ export class ProfileComponent {
     this.macrosPreset.set(this.defaultMacrosForGoal(g));
   }
 
+  private defaultMacrosForGoal(g: Goal): MacrosPreset {
+    switch (g) {
+      case 'LOSE':
+        return 'LOW_CARB';
+      case 'MAINTAIN':
+        return 'STANDARD';
+      case 'GAIN':
+      case 'MUSCLE_GAIN':
+        return 'HIGH_PROTEIN';
+    }
+  }
+
   selectGoalRate(rate: GoalRate): void {
     this.goalRate.set(rate);
   }
@@ -184,12 +217,11 @@ export class ProfileComponent {
     this.macrosPreset.set(preset);
   }
 
-  save(): void {
-    if (!this.canSave() || this.loading()) return;
+  submit(): void {
+    if (!this.canSubmit() || this.loading()) return;
 
     this.loading.set(true);
     this.errorMessage.set(null);
-    this.savedAt.set(null);
 
     const split = this.currentMacros();
     const payload: ProfileUpdatePayload = {
@@ -209,34 +241,12 @@ export class ProfileComponent {
     this.profileService.update(payload).subscribe({
       next: () => {
         this.loading.set(false);
-        this.savedAt.set(Date.now());
+        this.router.navigate(['/home']);
       },
       error: () => {
         this.loading.set(false);
-        this.errorMessage.set('Could not save changes. Please try again.');
+        this.errorMessage.set('Could not save your profile. Please try again.');
       }
     });
-  }
-
-  private defaultMacrosForGoal(g: Goal): MacrosPreset {
-    switch (g) {
-      case 'LOSE':
-        return 'LOW_CARB';
-      case 'MAINTAIN':
-        return 'STANDARD';
-      case 'GAIN':
-      case 'MUSCLE_GAIN':
-        return 'HIGH_PROTEIN';
-    }
-  }
-
-  private detectPreset(p: number | null, c: number | null, f: number | null): MacrosPreset {
-    if (p == null || c == null || f == null) return 'STANDARD';
-    for (const [key, val] of Object.entries(MACROS_PRESETS)) {
-      if (val.proteinPct === p && val.carbPct === c && val.fatPct === f) {
-        return key as MacrosPreset;
-      }
-    }
-    return 'STANDARD';
   }
 }

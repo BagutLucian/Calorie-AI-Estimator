@@ -1,0 +1,263 @@
+<div class="dialog">
+  <header class="dialog-head">
+    <h2 mat-dialog-title class="dialog-title">Add a meal</h2>
+    <button type="button" class="close-btn" (click)="cancel()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <div mat-dialog-content class="dialog-body">
+    <section class="source-col">
+      <span class="col-eyebrow">Source <span class="col-eyebrow-hint">(optional)</span></span>
+
+      <div class="mode-tabs">
+        <button
+          type="button"
+          class="mode-tab"
+          [class.active]="mode() === 'photo'"
+          (click)="setMode('photo')"
+        >
+          <mat-icon>photo_camera</mat-icon>
+          <span>Photo</span>
+        </button>
+        <button
+          type="button"
+          class="mode-tab"
+          [class.active]="mode() === 'search'"
+          (click)="setMode('search')"
+        >
+          <mat-icon>search</mat-icon>
+          <span>Search</span>
+        </button>
+      </div>
+
+      @if (mode() === 'photo') {
+        <div class="mode-panel">
+          @if (!imagePreview()) {
+            <label class="photo-drop">
+              <mat-icon>add_photo_alternate</mat-icon>
+              <span>Click to upload a photo</span>
+              <input type="file" accept="image/*" (change)="onImagePicked($event)" hidden />
+            </label>
+          } @else {
+            <div class="photo-preview-wrap">
+              <img class="photo-preview" [src]="imagePreview()" alt="Selected meal" />
+              <button type="button" class="photo-remove" (click)="clearImage()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+
+            @if (analyzing()) {
+              <div class="loader">
+                <mat-progress-spinner mode="indeterminate" diameter="32" />
+                <span>Analyzing…</span>
+              </div>
+            }
+
+            @if (aiError(); as err) {
+              <p class="info-msg error">{{ err }}</p>
+            }
+
+            @if (aiPredictions(); as preds) {
+              @if (preds.length === 0) {
+                <p class="info-msg">No suggestions returned. Use Search or fill the form on the right.</p>
+              } @else {
+                <p class="info-msg">Pick the best match:</p>
+                <ul class="suggestion-list">
+                  @for (p of preds; track p.rank) {
+                    <li>
+                      <button type="button" class="suggestion" (click)="pickPrediction(p)">
+                        <div class="suggestion-main">
+                          <span class="suggestion-name">{{ p.food.replace('_', ' ') }}</span>
+                          <span class="suggestion-macros">{{ p.calories_per_100g }} kcal/100g</span>
+                        </div>
+                        <span class="suggestion-confidence">{{ p.confidence_percentage }}%</span>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            }
+          }
+        </div>
+      }
+
+      @if (mode() === 'search') {
+        <div class="mode-panel">
+          <label class="app-field">
+            <span>Search food</span>
+            <input
+              class="app-input"
+              type="text"
+              placeholder="e.g. banana, nutella, greek yogurt"
+              [value]="searchTerm()"
+              (input)="onSearchInput($any($event.target).value)"
+            />
+          </label>
+
+          @if (searchLoading()) {
+            <div class="loader">
+              <mat-progress-spinner mode="indeterminate" diameter="24" />
+              <span>Searching…</span>
+            </div>
+          }
+
+          @if (searchError(); as err) {
+            <p class="info-msg error">{{ err }}</p>
+          }
+
+          @if (searchResults().length > 0) {
+            <ul class="suggestion-list scroll">
+              @for (r of searchResults(); track r.name + r.brand) {
+                <li>
+                  <button type="button" class="suggestion" (click)="pickSearchResult(r)">
+                    @if (r.imageUrl) {
+                      <img class="suggestion-img" [src]="r.imageUrl" [alt]="r.name" />
+                    } @else {
+                      <span class="suggestion-img placeholder">
+                        <mat-icon>restaurant</mat-icon>
+                      </span>
+                    }
+                    <div class="suggestion-main">
+                      <span class="suggestion-name">{{ r.name }}</span>
+                      @if (r.brand) {
+                        <span class="suggestion-brand">{{ r.brand }}</span>
+                      }
+                      <span class="suggestion-macros">
+                        {{ r.caloriesPer100g }} kcal · P {{ r.proteinPer100g }}g · C {{ r.carbsPer100g }}g · F {{ r.fatsPer100g }}g
+                      </span>
+                    </div>
+                  </button>
+                </li>
+              }
+            </ul>
+          } @else if (searchTerm().length >= 2 && !searchLoading() && !searchError()) {
+            <p class="info-msg">No results. Try a different name or fill manually on the right.</p>
+          } @else if (searchTerm().length < 2 && !searchLoading()) {
+            <p class="info-msg muted">Type at least 2 characters to search.</p>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="details-col">
+      <span class="col-eyebrow">Details</span>
+
+      <label class="app-field">
+        <span>Food name</span>
+        <input
+          class="app-input"
+          type="text"
+          [value]="foodName()"
+          (input)="foodName.set($any($event.target).value)"
+          placeholder="e.g. Banana, Pizza Margherita"
+        />
+      </label>
+
+      <label class="app-field">
+        <span>kcal / 100g</span>
+        <div class="input-with-info">
+          <input
+            class="app-input"
+            type="number"
+            min="0"
+            [ngModel]="caloriesPer100g()"
+            (ngModelChange)="caloriesPer100g.set($event)"
+            name="caloriesPer100g"
+          />
+          <button
+            type="button"
+            class="info-icon"
+            [class.ok]="theoreticalKcal() !== null && !kcalMismatch()"
+            [class.warn]="kcalMismatch()"
+            [matTooltip]="kcalTooltip()"
+            matTooltipPosition="left"
+            matTooltipClass="app-tooltip-multiline"
+            aria-label="Macros vs kcal info"
+          >
+            <mat-icon>info_outline</mat-icon>
+          </button>
+        </div>
+      </label>
+
+      <div class="macros-row">
+        <label class="app-field">
+          <span>Protein / 100g</span>
+          <input
+            class="app-input"
+            type="number"
+            min="0"
+            step="0.1"
+            [ngModel]="protein()"
+            (ngModelChange)="protein.set($event)"
+            name="protein"
+          />
+        </label>
+
+        <label class="app-field">
+          <span>Carbs / 100g</span>
+          <input
+            class="app-input"
+            type="number"
+            min="0"
+            step="0.1"
+            [ngModel]="carbs()"
+            (ngModelChange)="carbs.set($event)"
+            name="carbs"
+          />
+        </label>
+
+        <label class="app-field">
+          <span>Fat / 100g</span>
+          <input
+            class="app-input"
+            type="number"
+            min="0"
+            step="0.1"
+            [ngModel]="fats()"
+            (ngModelChange)="fats.set($event)"
+            name="fats"
+          />
+        </label>
+      </div>
+
+      <div class="serving-row">
+        <label class="app-field serving-grams">
+          <span>Grams eaten</span>
+          <input
+            class="app-input"
+            type="number"
+            min="1"
+            step="1"
+            [ngModel]="weightInGrams()"
+            (ngModelChange)="weightInGrams.set($event)"
+            name="grams"
+          />
+        </label>
+
+        <div class="total">
+          <span class="total-label">Total for this meal</span>
+          <span class="total-value">{{ totalCalories() | number:'1.0-0' }}<span class="total-unit">kcal</span></span>
+        </div>
+      </div>
+
+      @if (saveError(); as err) {
+        <p class="info-msg error">{{ err }}</p>
+      }
+    </section>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button type="button" class="app-btn app-btn-secondary" (click)="cancel()" [disabled]="saving()">
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="app-btn app-btn-primary"
+      [disabled]="!canSave() || saving()"
+      (click)="save()"
+    >
+      {{ saving() ? 'Saving…' : 'Save meal' }}
+    </button>
+  </div>
+</div>

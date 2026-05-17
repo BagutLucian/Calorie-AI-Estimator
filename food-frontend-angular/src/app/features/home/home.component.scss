@@ -1,12 +1,369 @@
-.home {
-  h1 {
-    margin: 0 0 0.5rem;
-    font-size: 1.75rem;
-    color: var(--mat-sys-on-surface);
-  }
+.home-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
 
-  .muted {
-    margin: 0;
-    color: var(--mat-sys-on-surface-variant);
+.home-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.home-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: var(--mat-sys-on-surface);
+}
+
+.home-sub {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.85rem;
+}
+
+.home-error {
+  margin: 0;
+  color: var(--mat-sys-error);
+  font-size: 0.85rem;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-areas:
+    'status     add'
+    'meals      add'
+    'chart      chart';
+  gap: 1.25rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'status'
+      'add'
+      'meals'
+      'chart';
   }
+}
+
+.card {
+  background: color-mix(in srgb, var(--mat-sys-surface-container) 65%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 50%, transparent);
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.status-card { grid-area: status; }
+.add-meal-card { grid-area: add; }
+.meals-card { grid-area: meals; }
+.chart-card { grid-area: chart; }
+
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.card-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.card-meta {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  letter-spacing: 0.5px;
+}
+
+/* --- Status card --- */
+
+.status-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.status-pill {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+
+  &[data-kind='on-track'] {
+    background: color-mix(in srgb, var(--app-success-text) 14%, transparent);
+    color: var(--app-success-text);
+    border-color: var(--app-success-border);
+  }
+  &[data-kind='caution'] {
+    background: rgba(245, 158, 11, 0.14);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.35);
+  }
+  &[data-kind='over'] {
+    background: color-mix(in srgb, var(--mat-sys-error) 16%, transparent);
+    color: var(--mat-sys-error);
+    border-color: color-mix(in srgb, var(--mat-sys-error) 35%, transparent);
+  }
+  &[data-kind='behind'] {
+    background: color-mix(in srgb, var(--app-accent) 14%, transparent);
+    color: var(--app-accent);
+    border-color: color-mix(in srgb, var(--app-accent) 35%, transparent);
+  }
+  &[data-kind='hit'] {
+    background: color-mix(in srgb, var(--app-success-text) 14%, transparent);
+    color: var(--app-success-text);
+    border-color: var(--app-success-border);
+  }
+}
+
+.kcal-row {
+  margin-top: 0.25rem;
+}
+
+.kcal-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--mat-sys-on-surface);
+  letter-spacing: -1px;
+  display: flex;
+  align-items: baseline;
+  gap: 0.15rem;
+}
+
+.kcal-slash {
+  margin: 0 0.2rem;
+  color: var(--mat-sys-on-surface-variant);
+  font-weight: 400;
+}
+
+.kcal-unit {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+  margin-left: 0.4rem;
+}
+
+.kcal-bar {
+  height: 6px;
+  background: color-mix(in srgb, white 6%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.kcal-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4f46e5, var(--app-accent), #ec4899);
+  border-radius: 3px;
+  transition: width 0.35s ease;
+}
+
+.macros-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding-top: 0.85rem;
+  border-top: 1px solid color-mix(in srgb, white 6%, transparent);
+
+  @media (max-width: 540px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.macro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.macro-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.macro-name {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.macro-amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.amount-sep {
+  margin: 0 0.15rem;
+  color: var(--mat-sys-on-surface-variant);
+  font-weight: 400;
+}
+
+.macro-unit {
+  font-size: 0.7rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin-left: 1px;
+}
+
+.macro-bar {
+  height: 4px;
+  background: color-mix(in srgb, white 6%, transparent);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.macro-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.35s ease;
+
+  &.protein { background: #818cf8; }
+  &.carbs { background: var(--app-accent); }
+  &.fats { background: #ec4899; }
+}
+
+/* --- Add meal card --- */
+
+.add-meal-card {
+  align-items: stretch;
+  justify-content: center;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      color-mix(in srgb, var(--app-accent) 22%, transparent) 0%,
+      transparent 60%
+    ),
+    color-mix(in srgb, var(--mat-sys-surface-container) 65%, transparent);
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--app-accent) 40%, transparent);
+
+    .add-meal-cta {
+      background: color-mix(in srgb, var(--mat-sys-primary) 38%, transparent);
+    }
+  }
+}
+
+.add-meal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.add-meal-icon {
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--app-accent);
+}
+
+.add-meal-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.4;
+}
+
+.add-meal-cta {
+  align-self: flex-start;
+  pointer-events: none;
+}
+
+/* --- Meals list --- */
+
+.empty-state {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 1rem 0;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+.meals-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.meal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid color-mix(in srgb, white 5%, transparent);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.meal-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.meal-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meal-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--mat-sys-on-surface-variant);
+  letter-spacing: 0.5px;
+}
+
+.meal-kcal {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+}
+
+/* --- Chart --- */
+
+.chart-wrap {
+  position: relative;
+  height: 220px;
+  width: 100%;
 }

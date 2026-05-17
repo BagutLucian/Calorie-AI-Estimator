@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { profileCompleteGuard, profileIncompleteGuard } from './core/guards/profile.guard';
 
 export const routes: Routes = [
   {
@@ -10,8 +11,14 @@ export const routes: Routes = [
       import('./features/auth/auth.component').then((m) => m.AuthComponent)
   },
   {
+    path: 'welcome',
+    canActivate: [authGuard, profileIncompleteGuard],
+    loadComponent: () =>
+      import('./features/welcome/welcome-wizard.component').then((m) => m.WelcomeWizardComponent)
+  },
+  {
     path: '',
-    canActivate: [authGuard],
+    canActivate: [authGuard, profileCompleteGuard],
     loadComponent: () =>
       import('./layouts/main-layout/main-layout.component').then((m) => m.MainLayoutComponent),
     children: [

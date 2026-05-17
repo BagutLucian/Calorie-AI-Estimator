@@ -1,4 +1,108 @@
-<section class="home">
-  <h1>Welcome{{ username() ? ', ' + username() : '' }}</h1>
-  <p class="muted">Home content coming soon.</p>
+<section class="home-page">
+  <header class="home-header">
+    <h1 class="home-title">Hello{{ username() ? ', ' + username() : '' }}</h1>
+    <p class="home-sub">Here's how today is going.</p>
+  </header>
+
+  @if (errorMessage(); as msg) {
+    <p class="home-error" role="alert">{{ msg }}</p>
+  }
+
+  <div class="home-grid">
+    <article class="card status-card">
+      <div class="status-head">
+        <span class="card-eyebrow">Today</span>
+        @if (status(); as s) {
+          <span class="status-pill" [attr.data-kind]="s.kind">{{ s.message }}</span>
+        }
+      </div>
+
+      <div class="kcal-row">
+        <div class="kcal-value">
+          {{ todayConsumed().calories | number:'1.0-0' }}<span class="kcal-slash">/</span>{{ profile()?.dailyCalorieGoal ?? 0 | number:'1.0-0' }}
+          <span class="kcal-unit">kcal</span>
+        </div>
+      </div>
+
+      <div class="kcal-bar">
+        <div class="kcal-fill" [style.width.%]="progressPct()"></div>
+      </div>
+
+      <div class="macros-row">
+        <div class="macro">
+          <div class="macro-head">
+            <span class="macro-name">Protein</span>
+            <span class="macro-amount">
+              {{ todayConsumed().protein | number:'1.0-0' }}<span class="amount-sep">/</span>{{ profile()?.proteinGrams ?? 0 }}<span class="macro-unit">g</span>
+            </span>
+          </div>
+          <div class="macro-bar"><div class="macro-fill protein" [style.width.%]="proteinPct()"></div></div>
+        </div>
+        <div class="macro">
+          <div class="macro-head">
+            <span class="macro-name">Carbs</span>
+            <span class="macro-amount">
+              {{ todayConsumed().carbs | number:'1.0-0' }}<span class="amount-sep">/</span>{{ profile()?.carbGrams ?? 0 }}<span class="macro-unit">g</span>
+            </span>
+          </div>
+          <div class="macro-bar"><div class="macro-fill carbs" [style.width.%]="carbsPct()"></div></div>
+        </div>
+        <div class="macro">
+          <div class="macro-head">
+            <span class="macro-name">Fat</span>
+            <span class="macro-amount">
+              {{ todayConsumed().fats | number:'1.0-0' }}<span class="amount-sep">/</span>{{ profile()?.fatGrams ?? 0 }}<span class="macro-unit">g</span>
+            </span>
+          </div>
+          <div class="macro-bar"><div class="macro-fill fats" [style.width.%]="fatsPct()"></div></div>
+        </div>
+      </div>
+    </article>
+
+    <button type="button" class="card add-meal-card" (click)="onAddMeal()">
+      <div class="add-meal-content">
+        <mat-icon class="add-meal-icon">add_circle</mat-icon>
+        <span class="card-eyebrow">Log a meal</span>
+        <p class="add-meal-desc">Upload a photo or enter the details manually.</p>
+        <span class="app-btn app-btn-primary add-meal-cta">Add meal</span>
+      </div>
+    </button>
+
+    <article class="card meals-card">
+      <div class="card-head">
+        <span class="card-eyebrow">Today's meals</span>
+        <span class="card-meta">{{ todayMeals().length }} logged</span>
+      </div>
+
+      @if (todayMeals().length === 0) {
+        <p class="empty-state">No meals logged yet. Start with your first meal of the day.</p>
+      } @else {
+        <ul class="meals-list">
+          @for (meal of todayMeals(); track meal.id) {
+            <li class="meal-item">
+              <div class="meal-main">
+                <span class="meal-name">{{ meal.foodName }}</span>
+                <span class="meal-time">{{ formatTime(meal.consumedAt) }}</span>
+              </div>
+              <span class="meal-kcal">{{ meal.totalCalories | number:'1.0-0' }} kcal</span>
+            </li>
+          }
+        </ul>
+      }
+    </article>
+
+    <article class="card chart-card">
+      <div class="card-head">
+        <span class="card-eyebrow">Last 7 days</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas
+          baseChart
+          [data]="weekChartData()"
+          [options]="weekChartOptions"
+          [type]="'bar'"
+        ></canvas>
+      </div>
+    </article>
+  </div>
 </section>

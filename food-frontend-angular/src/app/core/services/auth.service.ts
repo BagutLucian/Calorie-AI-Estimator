@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
+import { ProfileService } from './profile.service';
 
 interface LoginPayload {
   username: string;
@@ -21,6 +22,7 @@ const USERNAME_KEY = 'calorie_ai_username';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly profileService = inject(ProfileService);
   private readonly apiUrl = `${environment.apiUrl}/api/auth`;
 
   private readonly tokenSignal = signal<string | null>(localStorage.getItem(TOKEN_KEY));
@@ -45,6 +47,7 @@ export class AuthService {
     localStorage.removeItem(USERNAME_KEY);
     this.tokenSignal.set(null);
     this.usernameSignal.set(null);
+    this.profileService.clear();
   }
 
   getToken(): string | null {

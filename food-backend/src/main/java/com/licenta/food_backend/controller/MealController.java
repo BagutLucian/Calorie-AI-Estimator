@@ -19,7 +19,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/meals")
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin({"http://localhost:5173", "http://localhost:4200"})
 public class MealController {
 
     @Autowired

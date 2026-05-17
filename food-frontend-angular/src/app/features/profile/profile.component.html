@@ -1,4 +1,220 @@
-<section class="profile">
-  <h1>My profile</h1>
-  <p class="muted">Profile content coming soon.</p>
+<section class="profile-page">
+  <header class="profile-header">
+    <h1 class="profile-title">My Profile</h1>
+    <p class="profile-sub">Adjust your details — your target updates live as you change them.</p>
+  </header>
+
+  <div class="profile-layout">
+    <div class="profile-form">
+      <section class="profile-section">
+        <h2 class="section-heading">About you</h2>
+
+        <div class="app-field">
+          <span>Gender</span>
+          <div class="app-choices cols-3">
+            <button
+              type="button"
+              class="app-choice"
+              [class.selected]="gender() === 'MALE'"
+              (click)="selectGender('MALE')"
+            >Male</button>
+            <button
+              type="button"
+              class="app-choice"
+              [class.selected]="gender() === 'FEMALE'"
+              (click)="selectGender('FEMALE')"
+            >Female</button>
+            <button
+              type="button"
+              class="app-choice"
+              [class.selected]="gender() === 'OTHER'"
+              (click)="selectGender('OTHER')"
+            >Other</button>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <label class="app-field">
+            <span>Age (years)</span>
+            <input
+              class="app-input"
+              type="number"
+              min="1"
+              max="120"
+              [ngModel]="age()"
+              (ngModelChange)="age.set($event)"
+              name="age"
+            />
+          </label>
+
+          <label class="app-field">
+            <span>Height (cm)</span>
+            <input
+              class="app-input"
+              type="number"
+              min="50"
+              max="250"
+              [ngModel]="height()"
+              (ngModelChange)="height.set($event)"
+              name="height"
+            />
+          </label>
+
+          <label class="app-field">
+            <span>Weight (kg)</span>
+            <input
+              class="app-input"
+              type="number"
+              min="20"
+              max="300"
+              step="0.1"
+              [ngModel]="weight()"
+              (ngModelChange)="weight.set($event)"
+              name="weight"
+            />
+          </label>
+        </div>
+      </section>
+
+      <section class="profile-section">
+        <h2 class="section-heading">Activity level</h2>
+        <div class="app-choices cols-1">
+          @for (opt of activityOptions; track opt.value) {
+            <button
+              type="button"
+              class="app-choice app-choice-row"
+              [class.selected]="activityLevel() === opt.value"
+              (click)="selectActivity(opt.value)"
+            >
+              <div class="app-choice-text">
+                <span class="app-choice-label">{{ opt.label }}</span>
+                <span class="app-choice-desc">{{ opt.description }}</span>
+              </div>
+              <span class="app-choice-tag">×{{ opt.value }}</span>
+            </button>
+          }
+        </div>
+      </section>
+
+      <section class="profile-section">
+        <h2 class="section-heading">Goal</h2>
+        <div class="app-choices cols-2">
+          @for (opt of goalOptions; track opt.value) {
+            <button
+              type="button"
+              class="app-choice"
+              [class.selected]="goal() === opt.value"
+              (click)="selectGoal(opt.value)"
+            >
+              <span class="app-choice-label">{{ opt.label }}</span>
+              <span class="app-choice-desc">{{ opt.description }}</span>
+            </button>
+          }
+        </div>
+
+        @if (needsRate()) {
+          <div class="goal-rate-section">
+            <p class="section-sub">Rate</p>
+            <div class="app-choices cols-3">
+              @for (rate of goalRateOptions; track rate.value) {
+                <button
+                  type="button"
+                  class="app-choice"
+                  [class.selected]="goalRate() === rate.value"
+                  (click)="selectGoalRate(rate.value)"
+                >
+                  <span class="app-choice-label">{{ rate.label }}</span>
+                  <span class="app-choice-desc">{{ rate.kcalPerDay }}</span>
+                  <span class="app-choice-tag">{{ rate.kgPerWeek }}</span>
+                </button>
+              }
+            </div>
+
+            <label class="app-field target-weight-field">
+              <span>Target weight (kg) — optional</span>
+              <input
+                class="app-input"
+                type="number"
+                min="20"
+                max="300"
+                step="0.1"
+                [ngModel]="targetWeight()"
+                (ngModelChange)="targetWeight.set($event)"
+                name="targetWeight"
+              />
+            </label>
+          </div>
+        }
+      </section>
+
+      <section class="profile-section">
+        <h2 class="section-heading">Macros split</h2>
+        <div class="app-choices cols-3">
+          @for (preset of macrosOptions; track preset.value) {
+            <button
+              type="button"
+              class="app-choice"
+              [class.selected]="macrosPreset() === preset.value"
+              (click)="selectMacrosPreset(preset.value)"
+            >
+              <span class="app-choice-label">{{ preset.label }}</span>
+              <span class="app-choice-desc">{{ preset.description }}</span>
+            </button>
+          }
+        </div>
+      </section>
+
+      <div class="profile-actions">
+        @if (errorMessage(); as msg) {
+          <p class="profile-error" role="alert">{{ msg }}</p>
+        }
+        @if (savedAt() !== null) {
+          <span class="profile-saved" role="status">Saved ✓</span>
+        }
+        <button
+          type="button"
+          class="app-btn app-btn-primary"
+          [disabled]="!canSave() || loading()"
+          (click)="save()"
+        >
+          {{ loading() ? 'Saving…' : 'Save changes' }}
+        </button>
+      </div>
+    </div>
+
+    <aside class="profile-target">
+      <div class="target-card">
+        <span class="target-eyebrow">Daily target</span>
+        <div class="target-value">
+          {{ dailyTarget() | number:'1.0-0' }}<span class="target-unit">kcal</span>
+        </div>
+
+        <div class="target-meta">
+          <div class="target-meta-item">
+            <span class="meta-label">BMR</span>
+            <span class="meta-value">{{ bmr() | number:'1.0-0' }}</span>
+          </div>
+          <div class="target-meta-item">
+            <span class="meta-label">TDEE</span>
+            <span class="meta-value">{{ tdee() | number:'1.0-0' }}</span>
+          </div>
+        </div>
+
+        <div class="target-macros">
+          <div class="target-macro">
+            <span class="macro-label">Protein</span>
+            <span class="macro-value">{{ macroGrams().protein }}<span class="macro-unit">g</span></span>
+          </div>
+          <div class="target-macro">
+            <span class="macro-label">Carbs</span>
+            <span class="macro-value">{{ macroGrams().carbs }}<span class="macro-unit">g</span></span>
+          </div>
+          <div class="target-macro">
+            <span class="macro-label">Fat</span>
+            <span class="macro-value">{{ macroGrams().fat }}<span class="macro-unit">g</span></span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
 </section>

@@ -38,12 +38,33 @@ public class User {
     @Column(nullable = true)
     private Double height;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = true)
-    private String gender; 
+    private Gender gender;
 
     @Column(nullable = true)
     private Double activityLevel;
 
     @Column(nullable = true)
-    private Integer dailyCalorieGoal; 
+    private Integer dailyCalorieGoal;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private Goal goal;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private GoalRate goalRate;
+
+    @Column(nullable = true)
+    private Double targetWeight;
+
+    @Column(nullable = true)
+    private Integer proteinPct;
+
+    @Column(nullable = true)
+    private Integer carbPct;
+
+    @Column(nullable = true)
+    private Integer fatPct;
 }
