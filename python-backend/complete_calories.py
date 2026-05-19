@@ -131,6 +131,16 @@ EXISTING = {
 }
 
 
+def recompute_kcal(macros):
+    """kcal = 4P + 4C + 9F (Atwater). Macros sunt sursa de adevar, kcal e derivat
+    ca sa fie mereu consistent cu validarea din UI."""
+    kcal = 4 * macros["protein"] + 4 * macros["carbs"] + 9 * macros["fats"]
+    return {"kcal": int(round(kcal)),
+            "protein": macros["protein"],
+            "carbs": macros["carbs"],
+            "fats": macros["fats"]}
+
+
 def fetch_off(class_name):
     """Query Open Food Facts for a free-text term, return first product with all 4 macros, or None."""
     query = class_name.replace("_", " ")
@@ -179,18 +189,18 @@ def main():
 
     for i, c in enumerate(classes, start=1):
         if c in EXISTING:
-            out[c] = EXISTING[c]
+            out[c] = recompute_kcal(EXISTING[c])
             stats["existing"] += 1
-            print(f"[{i:>3}/{len(classes)}] {c} -> existing")
+            print(f"[{i:>3}/{len(classes)}] {c} -> existing {out[c]}")
             continue
 
         v = fetch_off(c)
         if v is not None:
-            out[c] = v
+            out[c] = recompute_kcal(v)
             stats["off"] += 1
-            print(f"[{i:>3}/{len(classes)}] {c} -> OFF {v}")
+            print(f"[{i:>3}/{len(classes)}] {c} -> OFF {out[c]}")
         else:
-            out[c] = DEFAULT_MACROS.copy()
+            out[c] = recompute_kcal(DEFAULT_MACROS)
             stats["default"] += 1
             print(f"[{i:>3}/{len(classes)}] {c} -> default (no OFF match)")
 
