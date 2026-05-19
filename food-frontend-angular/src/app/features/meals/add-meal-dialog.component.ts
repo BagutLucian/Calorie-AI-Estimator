@@ -35,7 +35,6 @@ export class AddMealDialogComponent {
 
   readonly mode = signal<AddMode>('photo');
 
-  // Form fields (always editable)
   readonly foodName = signal('');
   readonly caloriesPer100g = signal<number | null>(null);
   readonly protein = signal<number | null>(null);
@@ -43,20 +42,16 @@ export class AddMealDialogComponent {
   readonly fats = signal<number | null>(null);
   readonly weightInGrams = signal<number | null>(null);
 
-  /** ISO date (YYYY-MM-DD) for this meal. null = today. */
   readonly mealDate = signal<string | null>(null);
 
-  /** True once the user has typed/cleared kcal explicitly. Stops the macro-driven auto-fill. */
   private readonly kcalUserTouched = signal(false);
 
-  // Photo path
   readonly selectedImage = signal<File | null>(null);
   readonly imagePreview = signal<string | null>(null);
   readonly analyzing = signal(false);
   readonly aiPredictions = signal<AiPrediction[] | null>(null);
   readonly aiError = signal<string | null>(null);
 
-  // Search path
   readonly searchTerm = signal('');
   readonly searchLoading = signal(false);
   readonly searchError = signal<string | null>(null);
@@ -96,7 +91,6 @@ export class AddMealDialogComponent {
     return Math.round((kcal * grams) / 100);
   });
 
-  /** Macros scaled to the actual portion — exactly what backend will save. */
   readonly totalMacros = computed(() => {
     const grams = this.weightInGrams();
     if (grams == null || grams === 0) {
@@ -110,7 +104,6 @@ export class AddMealDialogComponent {
     };
   });
 
-  /** Atwater factors: 4 kcal/g for protein & carbs, 9 kcal/g for fat. */
   readonly theoreticalKcal = computed(() => {
     const p = this.protein();
     const c = this.carbs();
@@ -153,7 +146,7 @@ export class AddMealDialogComponent {
   );
 
   constructor() {
-    // Auto-fill kcal/100g from macros only if user hasn't touched the field yet.
+
     effect(() => {
       const theo = this.theoreticalKcal();
       const currentKcal = untracked(() => this.caloriesPer100g());
@@ -212,8 +205,6 @@ export class AddMealDialogComponent {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  // --- Photo ---
-
   onImagePicked(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -255,8 +246,6 @@ export class AddMealDialogComponent {
     this.aiError.set(null);
   }
 
-  // --- Search ---
-
   onSearchInput(value: string): void {
     this.searchTerm.set(value);
     this.searchInput$.next(value);
@@ -270,8 +259,6 @@ export class AddMealDialogComponent {
     this.fats.set(r.fatsPer100g);
     if (this.weightInGrams() == null) this.weightInGrams.set(100);
   }
-
-  // --- Save ---
 
   save(): void {
     if (!this.canSave() || this.saving()) return;

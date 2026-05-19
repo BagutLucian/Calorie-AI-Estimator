@@ -6,7 +6,7 @@ import Stats from './Stats';
 function Dashboard() {
   const [imagePreview, setImagePreview] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  
+
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [predictions, setPredictions] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -74,7 +74,7 @@ function Dashboard() {
 
     const token = localStorage.getItem('jwtToken');
     const parsedWeight = parseFloat(weight);
-    
+
     const mealData = {
       foodName: selectedFood.food.replace('_', ' '),
       caloriesPer100g: selectedFood.calories_per_100g,
@@ -113,34 +113,33 @@ function Dashboard() {
 
   return (
     <div className="flex flex-col items-center justify-start pt-10 min-h-screen pb-10 bg-gray-50">
-      
-      {/* --- BARA DE NAVIGARE --- */}
+
       <div className="w-full max-w-2xl flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-100">
         <h2 className="text-2xl font-black text-blue-900 tracking-tight mb-4 sm:mb-0">Calorie AI 🍏</h2>
-        
+
         <div className="flex space-x-4 items-center">
-          <button 
+          <button
             onClick={() => setCurrentView('upload')}
             className={`font-bold px-4 py-2 rounded-xl transition ${currentView === 'upload' ? 'bg-blue-50 text-blue-700' : 'text-gray-500 hover:bg-gray-50'}`}
           >
             📷 Analiză Nouă
           </button>
-          
-          <button 
+
+          <button
             onClick={() => setCurrentView('history')}
             className={`font-bold px-4 py-2 rounded-xl transition ${currentView === 'history' ? 'bg-blue-50 text-blue-700' : 'text-gray-500 hover:bg-gray-50'}`}
           >
             📅 Istoric
           </button>
 
-          <button 
+          <button
             onClick={() => setCurrentView('profile')}
             className={`font-bold px-4 py-2 rounded-xl transition ${currentView === 'profile' ? 'bg-blue-50 text-blue-700' : 'text-gray-500 hover:bg-gray-50'}`}
           >
             👤 Profil
           </button>
 
-          <button 
+          <button
             onClick={() => setCurrentView('stats')}
             className={`font-bold px-4 py-2 rounded-xl transition ${currentView === 'stats' ? 'bg-blue-50 text-blue-700' : 'text-gray-500 hover:bg-gray-50'}`}
           >
@@ -155,13 +154,10 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* --- AFIȘARE CONDIȚIONATĂ (CELE 3 ECRANE) --- */}
-      
-      {/* 1. Ecranul de Upload */}
       {currentView === 'upload' && (
         <div className="bg-white p-8 rounded-3xl shadow-lg w-full max-w-2xl text-center border border-gray-100 animate-fade-in-up">
           <h3 className="text-xl font-semibold text-gray-700 mb-6">Ce ai în farfurie astăzi?</h3>
-          
+
           <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-blue-300 rounded-2xl cursor-pointer hover:bg-blue-50 transition overflow-hidden">
             {imagePreview ? (
               <img src={imagePreview} alt="Mâncarea ta" className="w-full h-full object-cover" />
@@ -175,7 +171,7 @@ function Dashboard() {
           </label>
 
           {selectedFile && !predictions && (
-            <button 
+            <button
               onClick={handleAnalyze}
               disabled={isAnalyzing}
               className={`mt-6 w-full text-white font-bold py-4 px-4 rounded-2xl transition shadow-md text-lg ${isAnalyzing ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600 hover:-translate-y-1'}`}
@@ -191,15 +187,15 @@ function Dashboard() {
               <h4 className="text-lg font-bold text-gray-800 mb-4 text-left flex items-center">
                 <span className="mr-2">🤖</span> AI-ul crede că este:
               </h4>
-              
+
               <div className="flex flex-col space-y-3">
                 {predictions.map((item, index) => (
-                  <div 
+                  <div
                     key={index}
                     onClick={() => setSelectedFood(item)}
                     className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex justify-between items-center ${
-                      selectedFood?.food === item.food 
-                        ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-200 ring-offset-1' 
+                      selectedFood?.food === item.food
+                        ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-200 ring-offset-1'
                         : 'border-gray-100 hover:border-blue-300 hover:bg-blue-50 hover:shadow-sm'
                     }`}
                   >
@@ -220,8 +216,8 @@ function Dashboard() {
                     Câte grame ai mâncat?
                   </label>
                   <div className="flex items-center space-x-4">
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       placeholder="Ex: 250"
                       value={weight}
                       onChange={(e) => setWeight(e.target.value)}
@@ -229,14 +225,14 @@ function Dashboard() {
                     />
                     <span className="text-gray-500 font-bold text-lg">grame</span>
                   </div>
-                  
+
                   {saveMessage && (
                     <div className={`mt-4 p-3 rounded-lg font-bold text-center ${saveMessage.includes('✅') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                       {saveMessage}
                     </div>
                   )}
 
-                  <button 
+                  <button
                     onClick={handleSaveMeal}
                     className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-xl transition shadow-md text-lg hover:-translate-y-1"
                   >
@@ -249,13 +245,10 @@ function Dashboard() {
         </div>
       )}
 
-      {/* 2. Ecranul de Istoric */}
       {currentView === 'history' && <History />}
 
-      {/* 3. Ecranul de Profil */}
       {currentView === 'profile' && <Profile />}
 
-      {/* 4. Ecranul de Statistici */}
       {currentView === 'stats' && <Stats />}
 
     </div>

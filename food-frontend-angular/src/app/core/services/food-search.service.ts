@@ -14,10 +14,6 @@ export interface FoodSearchResult {
   imageUrl: string | null;
 }
 
-/**
- * Talks to the Java backend, which proxies the Open Food Facts search.
- * We don't hit OFF directly from the browser — CORS + JWT-leak avoidance.
- */
 @Injectable({ providedIn: 'root' })
 export class FoodSearchService {
   private readonly http = inject(HttpClient);

@@ -37,7 +37,7 @@ public class MealController {
             List<AiPredictionDto> predictions = aiService.getPredictionsFromPython(image);
             return new ResponseEntity<>(predictions, HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace(); 
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -46,12 +46,12 @@ public class MealController {
     public ResponseEntity<?> getMyHistory(@RequestParam String date) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName()).orElse(null);
-        
+
         if (user == null) return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
 
         LocalDate localDate = LocalDate.parse(date);
         List<Meal> meals = mealRepository.findByUserIdAndDate(user.getId(), localDate);
-        
+
         return new ResponseEntity<>(meals, HttpStatus.OK);
     }
 
@@ -89,7 +89,7 @@ public class MealController {
     public ResponseEntity<String> saveMeal(@RequestBody Meal mealInput) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName()).orElse(null);
-        
+
         if (user == null) return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
 
         Meal meal = new Meal();
@@ -97,7 +97,6 @@ public class MealController {
         meal.setCaloriesPer100g(mealInput.getCaloriesPer100g());
         meal.setWeightInGrams(mealInput.getWeightInGrams());
 
-        // Macros come in as values per 100g. Scale them to the actual portion size, just like total kcal.
         double weight = mealInput.getWeightInGrams() != null ? mealInput.getWeightInGrams() : 0.0;
         meal.setProtein(scaleMacro(mealInput.getProtein(), weight));
         meal.setCarbs(scaleMacro(mealInput.getCarbs(), weight));
@@ -105,13 +104,13 @@ public class MealController {
 
         double total = (mealInput.getCaloriesPer100g() * weight) / 100.0;
         meal.setTotalCalories(total);
-        
+
         if (mealInput.getDate() != null) {
             meal.setDate(mealInput.getDate());
         } else {
             meal.setDate(LocalDate.now());
         }
-        
+
         meal.setUser(user);
         mealRepository.save(meal);
 
@@ -122,7 +121,7 @@ public class MealController {
     public ResponseEntity<String> deleteMeal(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        
+
         User user = userRepository.findByUsername(username).orElse(null);
         Meal meal = mealRepository.findById(id).orElse(null);
 
@@ -138,7 +137,7 @@ public class MealController {
     public ResponseEntity<String> editMeal(@PathVariable Long id, @RequestBody Meal mealInput) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        
+
         User user = userRepository.findByUsername(username).orElse(null);
         Meal existingMeal = mealRepository.findById(id).orElse(null);
 
@@ -164,10 +163,6 @@ public class MealController {
         return new ResponseEntity<>("Meal updated successfully!", HttpStatus.OK);
     }
 
-    /**
-     * Macros arrive per-100g from the client; the stored value represents the actual amount
-     * consumed in this portion (per-portion grams), matching how totalCalories is stored.
-     */
     private double scaleMacro(Double perHundred, double weightGrams) {
         if (perHundred == null) return 0.0;
         return (perHundred * weightGrams) / 100.0;

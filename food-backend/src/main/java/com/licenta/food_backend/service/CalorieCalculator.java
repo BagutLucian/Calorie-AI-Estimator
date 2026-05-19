@@ -6,19 +6,6 @@ import com.licenta.food_backend.entity.GoalRate;
 import com.licenta.food_backend.entity.User;
 import org.springframework.stereotype.Service;
 
-/**
- * Daily calorie + macronutrient target calculator.
- *
- * BMR via Mifflin-St Jeor (1990):
- *   Male:   10*kg + 6.25*cm - 5*age + 5
- *   Female: 10*kg + 6.25*cm - 5*age - 161
- * TDEE = BMR * activityLevel (PAL multiplier 1.2..1.9)
- * Daily target = TDEE + goalAdjustment
- *   LOSE:        - 250/500/750 by GoalRate
- *   MAINTAIN:    0
- *   GAIN / MUSCLE_GAIN: + 250/500/750 by GoalRate
- * Safety floor: 1500 male, 1200 female (WHO conservative minimums).
- */
 @Service
 public class CalorieCalculator {
 

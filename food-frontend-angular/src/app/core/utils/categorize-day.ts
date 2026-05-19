@@ -2,11 +2,6 @@ import { Goal } from '../types/profile';
 
 export type DayKind = 'good' | 'caution' | 'bad';
 
-/**
- * Goal-aware classification of a day based on the consumed/target calorie ratio.
- * Same logic used by History calendar, History status badge, and Statistics adherence
- * so the visuals stay consistent across pages.
- */
 export function categorizeDay(ratio: number, goal: Goal): DayKind {
   switch (goal) {
     case 'LOSE':

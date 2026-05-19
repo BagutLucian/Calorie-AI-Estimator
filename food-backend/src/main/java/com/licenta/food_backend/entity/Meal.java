@@ -35,7 +35,7 @@ public class Meal {
     private Double totalCalories;
 
     private LocalDateTime consumedAt;
-    
+
     @PrePersist
     protected void onCreate() {
         this.consumedAt = LocalDateTime.now();

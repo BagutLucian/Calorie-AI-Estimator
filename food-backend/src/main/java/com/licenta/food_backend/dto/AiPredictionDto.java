@@ -5,17 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true) // <--- MAGIA: Ignoră câmpurile extra (cum ar fi 'rank')
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AiPredictionDto {
-    
+
     private String food;
-    
+
     @JsonProperty("calories_per_100g")
     private Integer calories;
 
     @JsonProperty("confidence_percentage")
     private Double confidence;
-    
+
     @JsonProperty("protein_per_100g")
     private Double protein;
 

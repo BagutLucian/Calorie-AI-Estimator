@@ -1,17 +1,3 @@
-"""
-Builds food_calories.json from food_classes.json.
-
-For each class:
-- if it is in EXISTING (the curated dictionary from main.py), reuse those values
-  (they are sanity-checked typical values for the named dish);
-- otherwise query Open Food Facts and pick the first product that has kcal,
-  protein, carbs, and fat populated;
-- otherwise fall back to DEFAULT_MACROS.
-
-Run once after editing EXISTING / Food-101 classes:
-    python complete_calories.py
-"""
-
 import json
 import time
 import sys
@@ -21,11 +7,10 @@ import urllib.request
 CLASSES_FILE = "food_classes.json"
 OUTPUT_FILE = "food_calories.json"
 OFF_URL = "https://world.openfoodfacts.org/cgi/search.pl"
-REQUEST_DELAY_SEC = 0.4  # polite to OFF
+REQUEST_DELAY_SEC = 0.4
 
 DEFAULT_MACROS = {"kcal": 250, "protein": 10, "carbs": 20, "fats": 10}
 
-# Curated values for the dishes we already had in main.py.
 EXISTING = {
     "apple_pie": {"kcal": 237, "protein": 2.4, "carbs": 34, "fats": 11},
     "baby_back_ribs": {"kcal": 290, "protein": 20, "carbs": 5, "fats": 22},
@@ -130,19 +115,14 @@ EXISTING = {
     "waffles": {"kcal": 291, "protein": 8, "carbs": 33, "fats": 14},
 }
 
-
 def recompute_kcal(macros):
-    """kcal = 4P + 4C + 9F (Atwater). Macros sunt sursa de adevar, kcal e derivat
-    ca sa fie mereu consistent cu validarea din UI."""
     kcal = 4 * macros["protein"] + 4 * macros["carbs"] + 9 * macros["fats"]
     return {"kcal": int(round(kcal)),
             "protein": macros["protein"],
             "carbs": macros["carbs"],
             "fats": macros["fats"]}
 
-
 def fetch_off(class_name):
-    """Query Open Food Facts for a free-text term, return first product with all 4 macros, or None."""
     query = class_name.replace("_", " ")
     params = {
         "search_terms": query,
@@ -168,7 +148,6 @@ def fetch_off(class_name):
         protein = n.get("proteins_100g")
         carbs = n.get("carbohydrates_100g")
         fats = n.get("fat_100g")
-        # require all 4 to consider it a usable record
         if None in (protein, carbs, fats):
             continue
         return {
@@ -178,7 +157,6 @@ def fetch_off(class_name):
             "fats": round(float(fats), 1),
         }
     return None
-
 
 def main():
     with open(CLASSES_FILE, "r", encoding="utf-8") as f:
@@ -214,7 +192,6 @@ def main():
     print(
         f"  existing: {stats['existing']}, OFF: {stats['off']}, default: {stats['default']}"
     )
-
 
 if __name__ == "__main__":
     main()

@@ -13,12 +13,10 @@ function Profile() {
   const [saveMessage, setSaveMessage] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Încărcăm datele existente ale utilizatorului când se deschide pagina
   useEffect(() => {
     fetchProfile();
   }, []);
 
-  // Recalculăm caloriile automat de fiecare dată când se modifică un câmp
   useEffect(() => {
     calculateCalories(formData);
   }, [formData]);
@@ -31,7 +29,7 @@ function Profile() {
       });
       if (response.ok) {
         const data = await response.json();
-        // Dacă utilizatorul are deja date salvate, le punem în formular
+
         if (data.age) {
           setFormData({
             age: data.age,
@@ -49,7 +47,6 @@ function Profile() {
     }
   };
 
-  // Formula științifică Mifflin-St Jeor
   const calculateCalories = (data) => {
     if (!data.weight || !data.height || !data.age) {
       setCalculatedGoal(0);
@@ -57,7 +54,7 @@ function Profile() {
     }
 
     let bmr = (10 * parseFloat(data.weight)) + (6.25 * parseFloat(data.height)) - (5 * parseInt(data.age));
-    
+
     if (data.gender === 'MALE') {
       bmr += 5;
     } else {
@@ -71,7 +68,7 @@ function Profile() {
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('jwtToken');
-    
+
     const payload = {
       ...formData,
       dailyCalorieGoal: calculatedGoal
@@ -103,19 +100,18 @@ function Profile() {
   return (
     <div className="w-full max-w-2xl mt-8 animate-fade-in-up">
       <div className="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
-        
+
         <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center border-b pb-4">
           <span className="mr-3 text-3xl">👤</span> Profilul Meu (Setare Obiectiv)
         </h3>
 
         <div className="flex flex-col md:flex-row gap-8">
-          
-          {/* Formularul din partea stângă */}
+
           <form onSubmit={handleSaveProfile} className="flex-1 space-y-4">
             <div className="flex space-x-4">
               <div className="flex-1">
                 <label className="block text-gray-700 font-bold mb-2">Gen</label>
-                <select 
+                <select
                   value={formData.gender}
                   onChange={(e) => setFormData({...formData, gender: e.target.value})}
                   className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none font-medium bg-white"
@@ -126,7 +122,7 @@ function Profile() {
               </div>
               <div className="flex-1">
                 <label className="block text-gray-700 font-bold mb-2">Vârstă (ani)</label>
-                <input 
+                <input
                   type="number" required
                   value={formData.age}
                   onChange={(e) => setFormData({...formData, age: e.target.value})}
@@ -138,7 +134,7 @@ function Profile() {
             <div className="flex space-x-4">
               <div className="flex-1">
                 <label className="block text-gray-700 font-bold mb-2">Greutate (kg)</label>
-                <input 
+                <input
                   type="number" required
                   value={formData.weight}
                   onChange={(e) => setFormData({...formData, weight: e.target.value})}
@@ -147,7 +143,7 @@ function Profile() {
               </div>
               <div className="flex-1">
                 <label className="block text-gray-700 font-bold mb-2">Înălțime (cm)</label>
-                <input 
+                <input
                   type="number" required
                   value={formData.height}
                   onChange={(e) => setFormData({...formData, height: e.target.value})}
@@ -158,7 +154,7 @@ function Profile() {
 
             <div>
               <label className="block text-gray-700 font-bold mb-2">Nivel de Activitate</label>
-              <select 
+              <select
                 value={formData.activityLevel}
                 onChange={(e) => setFormData({...formData, activityLevel: e.target.value})}
                 className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none font-medium bg-white"
@@ -181,7 +177,6 @@ function Profile() {
             </button>
           </form>
 
-          {/* Rezultatul (Calculatorul) din partea dreaptă */}
           <div className="flex-1 bg-gray-50 rounded-2xl p-6 border border-gray-200 flex flex-col justify-center items-center text-center">
             <h4 className="text-gray-500 font-bold uppercase tracking-widest text-sm mb-2">Necesar Caloric Zilnic</h4>
             {calculatedGoal > 0 ? (

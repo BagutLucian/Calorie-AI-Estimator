@@ -33,10 +33,8 @@ export class HistoryComponent {
   readonly loading = signal(false);
   readonly errorMessage = signal<string | null>(null);
 
-  /** All meals loaded for the currently visible month range. */
   readonly monthMeals = signal<Meal[]>([]);
 
-  /** Toggled false→true to force mat-calendar to re-mount with fresh day cells. */
   readonly calendarMounted = signal(true);
 
   readonly today = new Date();
@@ -137,20 +135,20 @@ export class HistoryComponent {
         return `In deficit — ${diff} kcal under`;
       }
       if (goal === 'MAINTAIN') return 'On target';
-      // GAIN / MUSCLE_GAIN
+
       if (consumed > target) return `Hit target — ${diff} kcal over`;
       return 'Hit target';
     }
     if (kind === 'caution') {
       if (goal === 'LOSE') return `Near limit — ${Math.round(target - consumed)} kcal left`;
       if (goal === 'MAINTAIN') return consumed < target ? `Slightly under — ${diff} kcal` : `Slightly over — ${diff} kcal`;
-      // GAIN
+
       return `Almost there — ${Math.round(target - consumed)} kcal more`;
     }
-    // bad
+
     if (goal === 'LOSE') return `Over by ${diff} kcal`;
     if (goal === 'MAINTAIN') return consumed > target ? `Over by ${diff} kcal` : `Under by ${diff} kcal`;
-    // GAIN
+
     return `Need ${Math.round(target - consumed)} kcal more`;
   }
 
@@ -161,7 +159,6 @@ export class HistoryComponent {
       this.profileService.load().subscribe();
     }
 
-    // Each time the calendar instance is (re)created, re-attach the month-navigation listener.
     effect(() => {
       const cal = this.calendar();
       this.stateSub?.unsubscribe();
@@ -215,7 +212,7 @@ export class HistoryComponent {
       next: (meals) => {
         this.monthMeals.set(meals);
         this.loading.set(false);
-        // Force the calendar to remount so its cached day cells re-evaluate dateClass.
+
         this.calendarMounted.set(false);
         setTimeout(() => this.calendarMounted.set(true));
       },

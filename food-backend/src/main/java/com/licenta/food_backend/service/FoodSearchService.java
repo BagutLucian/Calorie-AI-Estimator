@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Proxy service to Open Food Facts v2 search.
- * Browser → Java → OFF (avoids CORS issues + keeps JWT off third-party calls).
- */
 @Service
 public class FoodSearchService {
 
@@ -53,7 +49,7 @@ public class FoodSearchService {
             }
             return results;
         } catch (Exception ex) {
-            // OFF is sometimes 503; we treat any failure as empty results to keep UX functional
+
             return List.of();
         }
     }

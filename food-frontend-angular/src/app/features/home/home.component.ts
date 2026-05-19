@@ -82,7 +82,6 @@ export class HomeComponent {
       return { kind, message: `On target today` };
     }
 
-    // GAIN / MUSCLE_GAIN
     if (kind === 'good') {
       return { kind, message: consumed > target ? `Hit your target — ${diff} kcal over` : `Hit your target` };
     }

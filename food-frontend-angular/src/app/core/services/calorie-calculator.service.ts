@@ -2,10 +2,6 @@ import { Injectable } from '@angular/core';
 
 import { Gender, Goal, GoalRate } from '../types/profile';
 
-/**
- * Mirror of backend CalorieCalculator (Mifflin-St Jeor BMR + PAL TDEE + goal adjustment).
- * Used for live preview in the wizard and profile editor. Backend remains authoritative on save.
- */
 @Injectable({ providedIn: 'root' })
 export class CalorieCalculatorService {
   private static readonly FLOOR_MALE = 1500;
@@ -48,7 +44,6 @@ export class CalorieCalculatorService {
     return Math.max(raw, this.floorForGender(params.gender));
   }
 
-  /** Same as dailyTarget but without the safety floor applied — for UI hints. */
   rawDailyTarget(params: {
     gender: Gender | null;
     weight: number | null;

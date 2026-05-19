@@ -56,7 +56,6 @@ export class StatisticsComponent {
   readonly loading = signal(true);
   readonly errorMessage = signal<string | null>(null);
 
-  /** All days in the window as ISO strings, oldest first. */
   readonly days = computed<string[]>(() => {
     const n = this.windowDays();
     const out: string[] = [];
@@ -117,7 +116,6 @@ export class StatisticsComponent {
     };
   });
 
-  // --- Chart 1: Daily kcal trend + target line ---
   readonly trendChartData = computed<ChartData<'line'>>(() => {
     const data = this.dailyCalories();
     const labels = this.days().map((d) => this.shortLabel(d));
@@ -190,7 +188,6 @@ export class StatisticsComponent {
     }
   };
 
-  // --- Chart 2: Adherence donut (goal-aware via shared categorizeDay) ---
   readonly adherenceChartData = computed<ChartData<'doughnut'>>(() => {
     const a = this.adherence();
     return {
@@ -199,9 +196,9 @@ export class StatisticsComponent {
         {
           data: [a.good, a.caution, a.bad],
           backgroundColor: [
-            'rgba(87, 126, 101, 0.85)',   // good — green
-            'rgba(245, 158, 11, 0.75)',   // caution — amber
-            'rgba(255, 188, 175, 0.75)'   // bad — #ffbcaf
+            'rgba(87, 126, 101, 0.85)',
+            'rgba(245, 158, 11, 0.75)',
+            'rgba(255, 188, 175, 0.75)'
           ],
           borderColor: '#18181b',
           borderWidth: 2
@@ -240,7 +237,6 @@ export class StatisticsComponent {
     }
   };
 
-  // --- Chart 3: Macros actual vs target ---
   readonly macrosChartData = computed<ChartData<'bar'>>(() => {
     const actual = this.avgMacros();
     const p = this.profile();

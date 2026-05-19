@@ -15,7 +15,7 @@ public class JwtGenerator {
 
     public String generateToken(String username) {
         Date currentDate = new Date();
-        Date expireDate = new Date(currentDate.getTime() + 86400000); 
+        Date expireDate = new Date(currentDate.getTime() + 86400000);
 
         return Jwts.builder()
                 .setSubject(username)
@@ -25,7 +25,6 @@ public class JwtGenerator {
                 .compact();
     }
 
-    //extrage username-ul din token
     public String getUsernameFromJWT(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
     }

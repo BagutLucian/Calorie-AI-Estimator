@@ -84,7 +84,6 @@ body {
   --app-success-text: #5b906e;
   --app-success-border: color-mix(in srgb, #577e65 40%, transparent);
 
-  /* Soft rose for "bad / off track" status — distinct from --mat-sys-error which stays for form validation. */
   --app-bad-text: #ffbcaf;
 }
 
@@ -339,8 +338,8 @@ body {
   color: #3bab63;
   border: 1px solid #46835c !important;
   &.mat-calendar-body-selected{
-      border: 2px solid #46835c !important;      
-  } 
+      border: 2px solid #46835c !important;
+  }
 }
 
 .mat-calendar-body-cell.hist-day-bad .mat-calendar-body-cell-content {
@@ -349,7 +348,7 @@ body {
    border: 1px solid  var(--app-bad-text)!important;
     &.mat-calendar-body-selected{
       border: 2px solid  var(--app-bad-text)!important;
-  } 
+  }
 }
 
 .mat-calendar-body-cell.hist-day-caution .mat-calendar-body-cell-content {
@@ -357,7 +356,7 @@ body {
   color: #ffc03c;
   border: 1px solid   #ffc03c!important;
     &.mat-calendar-body-selected{
-        border: 2px solid  #ffc03c!important;        
+        border: 2px solid  #ffc03c!important;
     }
 }
 

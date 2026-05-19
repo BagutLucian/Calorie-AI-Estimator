@@ -80,8 +80,6 @@
   &.caution { background: #fbbf24; }
 }
 
-/* --- Detail card --- */
-
 .detail-head {
   display: flex;
   align-items: center;
@@ -96,19 +94,19 @@
   letter-spacing: 0.5px;
   padding: 0.3rem 0.7rem;
   border-radius: 10px;
-  border: none; //1px solid transparent;
+  border: none;
 
   &[data-kind='good'] {
     background: color-mix(in srgb, var(--app-success-text) 10%, transparent);
-    color: var(--app-success-text);    
+    color: var(--app-success-text);
   }
   &[data-kind='bad'] {
     background: color-mix(in srgb, var(--app-bad-text) 10%, transparent);
-    color: var(--app-bad-text);    
+    color: var(--app-bad-text);
   }
   &[data-kind='caution'] {
     background: rgba(245, 158, 11, 0.09);
-    color: #e5c98e; 
+    color: #e5c98e;
   }
 }
 
@@ -180,7 +178,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
   padding-top: 1rem;
-  margin-top: 1rem; 
+  margin-top: 1rem;
 
   @media (max-width: 540px) {
     grid-template-columns: 1fr;
