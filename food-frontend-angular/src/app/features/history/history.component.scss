@@ -1,16 +1,16 @@
-.home-page {
+.history-page {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.home-header {
+.history-header {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.home-title {
+.history-title {
   margin: 0;
   font-size: 1.6rem;
   font-weight: 400;
@@ -18,54 +18,98 @@
   color: var(--mat-sys-on-surface);
 }
 
-.home-sub {
+.history-sub {
   margin: 0;
   color: var(--mat-sys-on-surface-variant);
   font-size: 0.85rem;
 }
 
-.home-error {
+.history-error {
   margin: 0;
   color: var(--mat-sys-error);
   font-size: 0.85rem;
 }
 
-.home-grid {
+.history-layout {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  grid-template-areas:
-    'status     add'
-    'meals      add';
-  gap: 1.25rem;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      'status'
-      'add'
-      'meals';
   }
 }
 
-.card {
+.calendar-card,
+.detail-card {
   background: color-mix(in srgb, var(--mat-sys-surface-container) 65%, transparent);
   border: 1px solid color-mix(in srgb, var(--mat-sys-outline-variant) 50%, transparent);
   border-radius: 8px;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
+  padding: 1rem 1.25rem 1.25rem;
 }
 
-.status-card { grid-area: status; }
-.add-meal-card { grid-area: add; }
-.meals-card { grid-area: meals; }
+.calendar-card {
+  padding: 0.5rem 0.5rem 0.85rem;
+}
 
-.card-head {
+.calendar-legend {
   display: flex;
-  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  padding: 0.6rem 0.75rem 0;
+  font-size: 0.72rem;
+  color: var(--mat-sys-on-surface-variant);
+  letter-spacing: 0.3px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &.good { background: var(--app-success-text); }
+  &.bad { background: var(--app-bad-text); }
+  &.caution { background: #fbbf24; }
+}
+
+/* --- Detail card --- */
+
+.detail-head {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.status-pill {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  padding: 0.3rem 0.7rem;
+  border-radius: 10px;
+  border: none; //1px solid transparent;
+
+  &[data-kind='good'] {
+    background: color-mix(in srgb, var(--app-success-text) 10%, transparent);
+    color: var(--app-success-text);    
+  }
+  &[data-kind='bad'] {
+    background: color-mix(in srgb, var(--app-bad-text) 10%, transparent);
+    color: var(--app-bad-text);    
+  }
+  &[data-kind='caution'] {
+    background: rgba(245, 158, 11, 0.09);
+    color: #e5c98e; 
+  }
 }
 
 .card-eyebrow {
@@ -76,41 +120,12 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
-.card-meta {
-  font-size: 0.75rem;
+.empty-state {
+  margin: 0;
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.9rem;
   color: var(--mat-sys-on-surface-variant);
-  letter-spacing: 0.5px;
-}
-
-/* --- Status card --- */
-
-.status-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.status-pill {
-  font-size: 11px; 
-  letter-spacing: 0.5px;
-  padding: 0.3rem 0.7rem;
-  border-radius: 10px;
-  border: none; //1px solid transparent;
-
-  &[data-kind='good'] {
-    background: color-mix(in srgb, var(--app-success-text) 10%, transparent);
-    color: var(--app-success-text);    
-  }
-  &[data-kind='caution'] {
-    background: rgba(245, 158, 11, 0.09);
-    color: #e5c98e;   
-  }
-  &[data-kind='bad'] {
-    background: color-mix(in srgb, var(--app-bad-text) 10%, transparent);
-    color: var(--app-bad-text);   
-  }
 }
 
 .kcal-row {
@@ -119,7 +134,7 @@
 
 .kcal-value {
   font-family: 'Roboto Mono', monospace;
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: 700;
   line-height: 1;
   color: var(--mat-sys-on-surface);
@@ -137,7 +152,7 @@
 
 .kcal-unit {
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -147,6 +162,7 @@
 
 .kcal-bar {
   height: 6px;
+  margin-top: 0.6rem;
   background: color-mix(in srgb, white 6%, transparent);
   border-radius: 3px;
   overflow: hidden;
@@ -163,7 +179,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
-  padding-top: 0.85rem;  
+  padding-top: 1rem;
+  margin-top: 1rem; 
 
   @media (max-width: 540px) {
     grid-template-columns: 1fr;
@@ -226,78 +243,18 @@
   &.fats { background: #ec4899; }
 }
 
-/* --- Add meal card --- */
-
-.add-meal-card {
-  align-items: stretch;
-  justify-content: center;
-  text-align: left;
-  font-family: inherit;
-  cursor: pointer;
-  background:
-    radial-gradient(
-      circle at 100% 0%,
-      color-mix(in srgb, var(--app-accent) 22%, transparent) 0%,
-      transparent 60%
-    ),
-    color-mix(in srgb, var(--mat-sys-surface-container) 65%, transparent);
-  transition: border-color 0.15s ease, background 0.15s ease;
-
-  &:hover {
-    border-color: color-mix(in srgb, var(--app-accent) 40%, transparent);
-
-    .add-meal-cta {
-      background: color-mix(in srgb, var(--mat-sys-primary) 38%, transparent);
-    }
-  }
-}
-
-.add-meal-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.75rem;
-  text-align: left;
-}
-
-.add-meal-icon {
-  font-size: 2.5rem;
-  width: 2.5rem;
-  height: 2.5rem;
-  color: var(--app-accent);
-}
-
-.add-meal-desc {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--mat-sys-on-surface-variant);
-  line-height: 1.4;
-}
-
-.add-meal-cta {
-  align-self: flex-start;
-  pointer-events: none;
-}
-
-/* --- Meals list --- */
-
-.empty-state {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--mat-sys-on-surface-variant);
-  padding: 1rem 0;
-  text-align: center;
-  letter-spacing: 0.3px;
+.meals-section {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, white 6%, transparent);
 }
 
 .meals-list {
   list-style: none;
-  margin: 0 -1.25rem 0 0;
+  margin: 0.5rem -1.25rem 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  max-height: 235px;
-  overflow-y: auto;
 }
 
 .meal-item {
@@ -392,7 +349,7 @@
   color: var(--mat-sys-on-surface-variant);
   opacity: 0;
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
-  padding: 3px;
+    padding: 3px;
 
   &:hover {
     color: var(--mat-sys-error);
@@ -405,4 +362,3 @@
     height: 0.95rem;
   }
 }
-

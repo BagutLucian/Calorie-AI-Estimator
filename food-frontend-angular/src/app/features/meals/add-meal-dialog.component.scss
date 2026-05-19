@@ -63,10 +63,60 @@
 
 .dialog-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.75rem;
   padding: 0.75rem 1.5rem 0.85rem !important;
   border-top: 1px solid color-mix(in srgb, white 6%, transparent);
+  flex-wrap: wrap;
+}
+
+.meal-date-row {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--mat-sys-on-surface-variant);
+  letter-spacing: 0.2px;
+}
+
+.meal-date-label {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.meal-date-trigger {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: var(--app-accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover {
+    filter: brightness(1.15);
+  }
+}
+
+.meal-date-input {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+}
+
+.meal-actions-buttons {
+  display: inline-flex;
+  gap: 0.75rem;
 }
 
 /* --- Columns --- */
@@ -161,24 +211,43 @@
 
 /* --- Photo --- */
 
+.photo-zone {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  border: 1px dashed color-mix(in srgb, white 18%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, white 2%, transparent);
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:has(.photo-drop:hover) {
+    border-color: color-mix(in srgb, var(--app-accent) 50%, transparent);
+    background: color-mix(in srgb, var(--app-accent) 5%, transparent);
+  }
+
+  &.has-image {
+    padding: 0.6rem;
+    border-style: solid;
+    border-color: color-mix(in srgb, white 12%, transparent);
+  }
+}
+
 .photo-drop {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 2rem 1rem;
-  border: 1px dashed color-mix(in srgb, white 18%, transparent);
-  border-radius: 6px;
-  background: color-mix(in srgb, white 2%, transparent);
+  padding: 1.5rem 1rem;
+  width: 100%;
   cursor: pointer;
   color: var(--mat-sys-on-surface-variant);
   font-size: 0.85rem;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: color 0.15s ease;
 
   &:hover {
-    border-color: color-mix(in srgb, var(--app-accent) 50%, transparent);
-    background: color-mix(in srgb, var(--app-accent) 5%, transparent);
     color: var(--mat-sys-on-surface);
   }
 
@@ -190,23 +259,18 @@
   }
 }
 
-.photo-preview-wrap {
-  position: relative;
-  display: inline-block;
-  align-self: flex-start;
-}
-
 .photo-preview {
-  max-width: 180px;
+  max-width: 100%;
   max-height: 140px;
-  border-radius: 6px;
+  border-radius: 4px;
   display: block;
+  object-fit: contain;
 }
 
 .photo-remove {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: -10px;
+  right: -10px;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -315,13 +379,13 @@
 }
 
 .suggestion-macros {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 0.7rem;
   color: var(--mat-sys-on-surface-variant);
 }
 
 .suggestion-confidence {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--app-accent);
@@ -454,7 +518,7 @@
   display: inline-flex;
   align-items: baseline;
   gap: 0.3rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 1.65rem;
   font-weight: 700;
   color: var(--mat-sys-on-surface);
@@ -469,4 +533,31 @@
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--mat-sys-on-surface-variant);
+}
+
+.total-macros {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface);
+}
+
+.tm-label {
+  color: var(--mat-sys-on-surface-variant);
+  font-weight: 500;
+  margin-right: 1px;
+}
+
+.tm-unit {
+  font-family: inherit;
+  font-size: 0.65rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin-left: 1px;
+}
+
+.tm-sep {
+  color: color-mix(in srgb, var(--mat-sys-on-surface-variant) 50%, transparent);
 }

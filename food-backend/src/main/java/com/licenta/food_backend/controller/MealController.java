@@ -59,14 +59,29 @@ public class MealController {
     public ResponseEntity<?> getWeeklyHistory() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(authentication.getName()).orElse(null);
-        
+
         if (user == null) return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
 
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(6);
 
         List<Meal> meals = mealRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate);
-        
+
+        return new ResponseEntity<>(meals, HttpStatus.OK);
+    }
+
+    @GetMapping("/my-history/range")
+    public ResponseEntity<?> getHistoryRange(@RequestParam String start, @RequestParam String end) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUsername(authentication.getName()).orElse(null);
+
+        if (user == null) return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+
+        List<Meal> meals = mealRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate);
+
         return new ResponseEntity<>(meals, HttpStatus.OK);
     }
 
@@ -81,12 +96,14 @@ public class MealController {
         meal.setFoodName(mealInput.getFoodName());
         meal.setCaloriesPer100g(mealInput.getCaloriesPer100g());
         meal.setWeightInGrams(mealInput.getWeightInGrams());
-        
-        meal.setProtein(mealInput.getProtein() != null ? mealInput.getProtein() : 0.0);
-        meal.setCarbs(mealInput.getCarbs() != null ? mealInput.getCarbs() : 0.0);
-        meal.setFats(mealInput.getFats() != null ? mealInput.getFats() : 0.0);
-     
-        double total = (mealInput.getCaloriesPer100g() * mealInput.getWeightInGrams()) / 100.0;
+
+        // Macros come in as values per 100g. Scale them to the actual portion size, just like total kcal.
+        double weight = mealInput.getWeightInGrams() != null ? mealInput.getWeightInGrams() : 0.0;
+        meal.setProtein(scaleMacro(mealInput.getProtein(), weight));
+        meal.setCarbs(scaleMacro(mealInput.getCarbs(), weight));
+        meal.setFats(scaleMacro(mealInput.getFats(), weight));
+
+        double total = (mealInput.getCaloriesPer100g() * weight) / 100.0;
         meal.setTotalCalories(total);
         
         if (mealInput.getDate() != null) {
@@ -133,17 +150,26 @@ public class MealController {
         existingMeal.setCaloriesPer100g(mealInput.getCaloriesPer100g());
         existingMeal.setWeightInGrams(mealInput.getWeightInGrams());
 
-        existingMeal.setProtein(mealInput.getProtein() != null ? mealInput.getProtein() : 0.0);
-        existingMeal.setCarbs(mealInput.getCarbs() != null ? mealInput.getCarbs() : 0.0);
-        existingMeal.setFats(mealInput.getFats() != null ? mealInput.getFats() : 0.0);
-        // ---------------------------------------
+        double weight = mealInput.getWeightInGrams() != null ? mealInput.getWeightInGrams() : 0.0;
+        existingMeal.setProtein(scaleMacro(mealInput.getProtein(), weight));
+        existingMeal.setCarbs(scaleMacro(mealInput.getCarbs(), weight));
+        existingMeal.setFats(scaleMacro(mealInput.getFats(), weight));
 
         if (mealInput.getWeightInGrams() != null && mealInput.getCaloriesPer100g() != null) {
-            double total = (mealInput.getCaloriesPer100g() * mealInput.getWeightInGrams()) / 100.0;
+            double total = (mealInput.getCaloriesPer100g() * weight) / 100.0;
             existingMeal.setTotalCalories(total);
         }
 
         mealRepository.save(existingMeal);
         return new ResponseEntity<>("Meal updated successfully!", HttpStatus.OK);
+    }
+
+    /**
+     * Macros arrive per-100g from the client; the stored value represents the actual amount
+     * consumed in this portion (per-portion grams), matching how totalCalories is stored.
+     */
+    private double scaleMacro(Double perHundred, double weightGrams) {
+        if (perHundred == null) return 0.0;
+        return (perHundred * weightGrams) / 100.0;
     }
 }

@@ -63,7 +63,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
 }
 
 .wizard-dot {
@@ -223,8 +223,40 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
+.summary-stat.highlight {
+  position: relative;
+}
+
+.floor-info {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #fbbf24;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(245, 158, 11, 0.14);
+  }
+
+  mat-icon {
+    font-size: 0.95rem;
+    width: 0.95rem;
+    height: 0.95rem;
+    line-height: 0.95rem;
+  }
+}
+
 .stat-value {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--mat-sys-on-surface);
@@ -264,7 +296,7 @@
 }
 
 .macro-value {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 1.15rem;
   font-weight: 600;
   color: var(--mat-sys-on-surface);

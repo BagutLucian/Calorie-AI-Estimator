@@ -43,16 +43,33 @@ export class CalorieCalculatorService {
     goal: Goal | null;
     goalRate: GoalRate | null;
   }): number {
+    const raw = this.rawDailyTarget(params);
+    if (raw === 0) return 0;
+    return Math.max(raw, this.floorForGender(params.gender));
+  }
+
+  /** Same as dailyTarget but without the safety floor applied — for UI hints. */
+  rawDailyTarget(params: {
+    gender: Gender | null;
+    weight: number | null;
+    height: number | null;
+    age: number | null;
+    activityLevel: number | null;
+    goal: Goal | null;
+    goalRate: GoalRate | null;
+  }): number {
     const bmr = this.bmr(params.gender, params.weight, params.height, params.age);
     const tdee = this.tdee(bmr, params.activityLevel);
     if (tdee === 0 || !params.goal) {
       return 0;
     }
-    const target = tdee + this.goalAdjustment(params.goal, params.goalRate);
-    const floor = params.gender === 'FEMALE'
+    return Math.round(tdee + this.goalAdjustment(params.goal, params.goalRate));
+  }
+
+  floorForGender(gender: Gender | null): number {
+    return gender === 'FEMALE'
       ? CalorieCalculatorService.FLOOR_FEMALE
       : CalorieCalculatorService.FLOOR_MALE;
-    return Math.round(Math.max(target, floor));
   }
 
   proteinGrams(calories: number, pct: number): number {

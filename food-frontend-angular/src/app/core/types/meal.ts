@@ -25,6 +25,7 @@ export interface MealSavePayload {
   protein: number;
   carbs: number;
   fats: number;
+  date?: string;
 }
 
 export interface AiPrediction {

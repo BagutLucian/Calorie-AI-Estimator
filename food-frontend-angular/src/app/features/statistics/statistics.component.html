@@ -1,0 +1,86 @@
+<section class="stats-page">
+  <header class="stats-header">
+    <div class="stats-title-row">
+      <h1 class="stats-title">Statistics</h1>
+      <div class="window-tabs">
+        @for (opt of windowOptions; track opt.value) {
+          <button
+            type="button"
+            class="window-tab"
+            [class.active]="windowDays() === opt.value"
+            (click)="setWindow(opt.value)"
+          >
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+    </div>
+    <p class="stats-sub">Trends and averages over your last {{ windowDays() }} days.</p>
+  </header>
+
+  @if (errorMessage(); as msg) {
+    <p class="stats-error" role="alert">{{ msg }}</p>
+  }
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <span class="kpi-label">Days logged</span>
+      <span class="kpi-value">{{ daysWithData() }}<span class="kpi-suffix">/{{ windowDays() }}</span></span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-label">Avg kcal / day</span>
+      <span class="kpi-value">{{ avgCalories() | number:'1.0-0' }}</span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-label">Target</span>
+      <span class="kpi-value">{{ profile()?.dailyCalorieGoal ?? 0 | number:'1.0-0' }}</span>
+    </div>
+  </div>
+
+  <article class="chart-card">
+    <header class="chart-head">
+      <span class="card-eyebrow">Daily calories</span>
+      <span class="chart-meta">trend over {{ windowDays() }} days</span>
+    </header>
+    <div class="chart-wrap chart-wrap-lg">
+      <canvas
+        baseChart
+        [data]="trendChartData()"
+        [options]="trendChartOptions"
+        [type]="'line'"
+      ></canvas>
+    </div>
+  </article>
+
+  <div class="chart-grid">
+    <article class="chart-card">
+      <header class="chart-head">
+        <span class="card-eyebrow">Target adherence</span>
+        <span class="chart-meta">{{ adherence().logged }} days with data</span>
+      </header>
+      <div class="chart-wrap chart-wrap-md">
+        <canvas
+          baseChart
+          [data]="adherenceChartData()"
+          [options]="adherenceChartOptions"
+          [type]="'doughnut'"
+        ></canvas>
+      </div>
+    </article>
+
+    <article class="chart-card">
+      <header class="chart-head">
+        <span class="card-eyebrow">Macros — average vs target</span>
+        <span class="chart-meta">grams per day</span>
+      </header>
+      <div class="chart-wrap chart-wrap-md">
+        <canvas
+          baseChart
+          [data]="macrosChartData()"
+          [options]="macrosChartOptions"
+          [type]="'bar'"
+        ></canvas>
+      </div>
+    </article>
+  </div>
+</section>

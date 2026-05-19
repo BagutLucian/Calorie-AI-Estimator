@@ -1,0 +1,120 @@
+<section class="history-page">
+  <header class="history-header">
+    <h1 class="history-title">History</h1>
+    <p class="history-sub">Browse past days. Click a highlighted date to see what you ate.</p>
+  </header>
+
+  @if (errorMessage(); as msg) {
+    <p class="history-error" role="alert">{{ msg }}</p>
+  }
+
+  <div class="history-layout">
+    <div class="calendar-card">
+      @if (calendarMounted()) {
+        <mat-calendar
+          [startAt]="monthStart()"
+          [selected]="selectedDate()"
+          [maxDate]="today"
+          [dateClass]="dateClassFn()"
+          [dateFilter]="dateFilter"
+          (selectedChange)="onDateSelected($event)"
+        />
+      }
+
+      <div class="calendar-legend">
+        <span class="legend-item"><span class="legend-dot good"></span>On track</span>
+        <span class="legend-item"><span class="legend-dot caution"></span>Caution</span>
+        <span class="legend-item"><span class="legend-dot bad"></span>Off track</span>
+      </div>
+    </div>
+
+    <div class="detail-card d-flex flex-column gap-2">
+      @if (!selectedDate()) {
+        <p class="empty-state">Pick a day from the calendar to see details.</p>
+      } @else if (selectedDayMeals().length === 0) {
+        <header class="detail-head">
+          <span class="card-eyebrow">{{ formatSelectedDate(selectedDate()) }}</span>
+          @if (selectedDayStatus(); as s) {
+            <span class="status-pill" [attr.data-kind]="s.kind">{{ s.message }}</span>
+          }
+        </header>
+        <p class="empty-state">No meals logged on this day.</p>
+      } @else {
+        <header class="detail-head">
+          <span class="card-eyebrow">{{ formatSelectedDate(selectedDate()) }}</span>
+          @if (selectedDayStatus(); as s) {
+            <span class="status-pill" [attr.data-kind]="s.kind">{{ s.message }}</span>
+          }
+        </header>
+
+        <div class="kcal-row">
+          <div class="kcal-value">
+            {{ selectedDayTotals().calories | number:'1.0-0' }}<span class="kcal-slash">/</span>{{ profile()?.dailyCalorieGoal ?? 0 | number:'1.0-0' }}
+            <span class="kcal-unit">kcal</span>
+          </div>
+        </div>
+
+        <div class="kcal-bar">
+          <div class="kcal-fill" [style.width.%]="progressPct()"></div>
+        </div>
+
+        <div class="macros-row mt-3 pt-2 mb-1">
+          <div class="macro">
+            <div class="macro-head">
+              <span class="macro-name">Protein</span>
+              <span class="macro-amount">{{ selectedDayTotals().protein | number:'1.0-0' }}<span class="amount-sep">/</span>{{ profile()?.proteinGrams ?? 0 }}<span class="macro-unit">g</span></span>
+            </div>
+            <div class="macro-bar"><div class="macro-fill protein" [style.width.%]="proteinPct()"></div></div>
+          </div>
+          <div class="macro">
+            <div class="macro-head">
+              <span class="macro-name">Carbs</span>
+              <span class="macro-amount">{{ selectedDayTotals().carbs | number:'1.0-0' }}<span class="amount-sep">/</span>{{ profile()?.carbGrams ?? 0 }}<span class="macro-unit">g</span></span>
+            </div>
+            <div class="macro-bar"><div class="macro-fill carbs" [style.width.%]="carbsPct()"></div></div>
+          </div>
+          <div class="macro">
+            <div class="macro-head">
+              <span class="macro-name">Fat</span>
+              <span class="macro-amount">{{ selectedDayTotals().fats | number:'1.0-0' }}<span class="amount-sep">/</span>{{ profile()?.fatGrams ?? 0 }}<span class="macro-unit">g</span></span>
+            </div>
+            <div class="macro-bar"><div class="macro-fill fats" [style.width.%]="fatsPct()"></div></div>
+          </div>
+        </div>
+
+        <div class="meals-section">
+          <span class="card-eyebrow">Meals · {{ selectedDayMeals().length }}</span>
+          <ul class="meals-list">
+            @for (meal of selectedDayMeals(); track meal.id) {
+              <li class="meal-item">
+                <div class="meal-main">
+                  <span class="meal-name">{{ meal.foodName }}</span>
+                  <span class="meal-time">{{ formatTime(meal.consumedAt) }}</span>
+                </div>
+                <div class="meal-stats">
+                  <span class="meal-kcal">{{ meal.totalCalories | number:'1.0-0' }} kcal</span>
+                  <span class="meal-macros">
+                    <span class="mm-label">P</span> {{ meal.protein | number:'1.0-0' }}<span class="mm-unit">g</span>
+                    <span class="meal-sep">·</span>
+                    <span class="mm-label">C</span> {{ meal.carbs | number:'1.0-0' }}<span class="mm-unit">g</span>
+                    <span class="meal-sep">·</span>
+                    <span class="mm-label">F</span> {{ meal.fats | number:'1.0-0' }}<span class="mm-unit">g</span>
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  class="meal-delete"
+                  (click)="deleteMeal(meal.id, $event)"
+                  aria-label="Delete meal"
+                  matTooltip="Delete"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </div>
+</section>

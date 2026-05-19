@@ -28,63 +28,13 @@ model = model.to(device)
 model.eval()
 
 # --- INCARCARE CLASE SI CALORII ---
-with open("food_classes.json", "r") as f:
+with open("food_classes.json", "r", encoding="utf-8") as f:
     class_names = json.load(f)
 
-# Aici am îmbogățit dicționarul. Fiecare cheie are acum un dicționar cu 4 valori.
-calorie_database = {
-    'apple_pie': {'kcal': 237, 'protein': 2.4, 'carbs': 34, 'fats': 11},
-    'baby_back_ribs': {'kcal': 290, 'protein': 20, 'carbs': 5, 'fats': 22},
-    'baklava': {'kcal': 360, 'protein': 6.5, 'carbs': 40, 'fats': 20},
-    'beef_carpaccio': {'kcal': 120, 'protein': 21, 'carbs': 0, 'fats': 4},
-    'beef_tartare': {'kcal': 180, 'protein': 20, 'carbs': 1, 'fats': 10},
-    'beet_salad': {'kcal': 80, 'protein': 2, 'carbs': 10, 'fats': 4},
-    'beignets': {'kcal': 350, 'protein': 5, 'carbs': 42, 'fats': 18},
-    'bibimbap': {'kcal': 490, 'protein': 15, 'carbs': 65, 'fats': 18},
-    'bread_pudding': {'kcal': 250, 'protein': 6, 'carbs': 35, 'fats': 10},
-    'breakfast_burrito': {'kcal': 300, 'protein': 12, 'carbs': 28, 'fats': 16},
-    'bruschetta': {'kcal': 150, 'protein': 3, 'carbs': 20, 'fats': 6},
-    'caesar_salad': {'kcal': 180, 'protein': 5, 'carbs': 8, 'fats': 15},
-    'cannoli': {'kcal': 280, 'protein': 6, 'carbs': 30, 'fats': 15},
-    'caprese_salad': {'kcal': 150, 'protein': 9, 'carbs': 4, 'fats': 11},
-    'carrot_cake': {'kcal': 320, 'protein': 4, 'carbs': 45, 'fats': 15},
-    'ceviche': {'kcal': 140, 'protein': 18, 'carbs': 8, 'fats': 4},
-    'cheesecake': {'kcal': 320, 'protein': 6, 'carbs': 25, 'fats': 22},
-    'cheese_plate': {'kcal': 370, 'protein': 20, 'carbs': 2, 'fats': 30},
-    'chicken_curry': {'kcal': 200, 'protein': 15, 'carbs': 8, 'fats': 12},
-    'chicken_quesadilla': {'kcal': 320, 'protein': 18, 'carbs': 25, 'fats': 16},
-    'chicken_wings': {'kcal': 290, 'protein': 18, 'carbs': 0, 'fats': 22},
-    'chocolate_cake': {'kcal': 370, 'protein': 5, 'carbs': 45, 'fats': 18},
-    'chocolate_mousse': {'kcal': 250, 'protein': 4, 'carbs': 20, 'fats': 18},
-    'churros': {'kcal': 340, 'protein': 4, 'carbs': 40, 'fats': 18},
-    'clam_chowder': {'kcal': 120, 'protein': 6, 'carbs': 12, 'fats': 5},
-    'club_sandwich': {'kcal': 280, 'protein': 15, 'carbs': 30, 'fats': 12},
-    'crab_cakes': {'kcal': 200, 'protein': 16, 'carbs': 10, 'fats': 10},
-    'creme_brulee': {'kcal': 340, 'protein': 5, 'carbs': 25, 'fats': 25},
-    'croque_madame': {'kcal': 350, 'protein': 18, 'carbs': 25, 'fats': 20},
-    'cup_cakes': {'kcal': 330, 'protein': 3, 'carbs': 50, 'fats': 15},
-    'deviled_eggs': {'kcal': 180, 'protein': 12, 'carbs': 1, 'fats': 14},
-    'donuts': {'kcal': 450, 'protein': 5, 'carbs': 50, 'fats': 25},
-    'dumplings': {'kcal': 240, 'protein': 10, 'carbs': 30, 'fats': 8},
-    'edamame': {'kcal': 120, 'protein': 11, 'carbs': 10, 'fats': 5},
-    'eggs_benedict': {'kcal': 280, 'protein': 12, 'carbs': 15, 'fats': 20},
-    'escargots': {'kcal': 90, 'protein': 16, 'carbs': 2, 'fats': 1},
-    'falafel': {'kcal': 330, 'protein': 13, 'carbs': 31, 'fats': 17},
-    'filet_mignon': {'kcal': 240, 'protein': 26, 'carbs': 0, 'fats': 15},
-    'fish_and_chips': {'kcal': 265, 'protein': 12, 'carbs': 25, 'fats': 14},
-    'foie_gras': {'kcal': 460, 'protein': 11, 'carbs': 4, 'fats': 43},
-    'french_fries': {'kcal': 312, 'protein': 3.4, 'carbs': 41, 'fats': 15},
-    'french_onion_soup': {'kcal': 90, 'protein': 4, 'carbs': 10, 'fats': 3},
-    'french_toast': {'kcal': 240, 'protein': 8, 'carbs': 30, 'fats': 10},
-    'fried_calamari': {'kcal': 175, 'protein': 15, 'carbs': 15, 'fats': 6},
-    'fried_rice': {'kcal': 163, 'protein': 4, 'carbs': 33, 'fats': 2},
-    'frozen_yogurt': {'kcal': 127, 'protein': 4, 'carbs': 23, 'fats': 2},
-    'garlic_bread': {'kcal': 350, 'protein': 8, 'carbs': 45, 'fats': 15},
-    'gnocchi': {'kcal': 130, 'protein': 3, 'carbs': 28, 'fats': 1},
-    'greek_salad': {'kcal': 80, 'protein': 3, 'carbs': 6, 'fats': 5},
-    'grilled_cheese_sandwich': {'kcal': 290, 'protein': 12, 'carbs': 28, 'fats': 15},
-    'hamburger': {'kcal': 295, 'protein': 17, 'carbs': 24, 'fats': 14}
-}
+# Generat de complete_calories.py (curated + Open Food Facts). Reruleaza scriptul
+# daca adaugi/modifici clasele in food_classes.json.
+with open("food_calories.json", "r", encoding="utf-8") as f:
+    calorie_database = json.load(f)
 
 # Un dicționar generic dacă modelul dă o clasă care nu e în dicționar
 DEFAULT_MACROS = {'kcal': 250, 'protein': 10, 'carbs': 20, 'fats': 10}

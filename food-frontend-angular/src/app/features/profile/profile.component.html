@@ -184,6 +184,18 @@
 
     <aside class="profile-target">
       <div class="target-card">
+        @if (floorApplied()) {
+          <button
+            type="button"
+            class="floor-info"
+            [matTooltip]="floorTooltip()"
+            matTooltipPosition="left"
+            matTooltipClass="app-tooltip-multiline"
+            aria-label="Safety floor info"
+          >
+            <mat-icon>info_outline</mat-icon>
+          </button>
+        }
         <span class="target-eyebrow">Daily target</span>
         <div class="target-value">
           {{ dailyTarget() | number:'1.0-0' }}<span class="target-unit">kcal</span>

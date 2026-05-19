@@ -18,7 +18,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && token && isOurApi) {
+      // Spring Security returns 403 for invalid/expired JWT (not 401), so handle both.
+      if ((error.status === 401 || error.status === 403) && token && isOurApi) {
         auth.logout();
         router.navigate(['/login']);
       }

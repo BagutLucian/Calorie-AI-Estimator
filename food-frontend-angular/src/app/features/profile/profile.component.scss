@@ -121,6 +121,7 @@
 }
 
 .target-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -148,7 +149,7 @@
   display: flex;
   align-items: baseline;
   gap: 0.3rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 2.85rem;
   font-weight: 700;
   line-height: 1;
@@ -163,6 +164,34 @@
   letter-spacing: 1px;
   text-transform: uppercase;
   font-family: inherit;
+}
+
+.floor-info {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #fbbf24;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(245, 158, 11, 0.14);
+  }
+
+  mat-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+  }
 }
 
 .target-meta {
@@ -188,7 +217,7 @@
 }
 
 .meta-value {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--mat-sys-on-surface);
@@ -217,7 +246,7 @@
 }
 
 .macro-value {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 1rem;
   font-weight: 600;
   color: var(--mat-sys-on-surface);

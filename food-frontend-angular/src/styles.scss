@@ -81,8 +81,11 @@ body {
 
 :root {
   --app-success-bg: color-mix(in srgb, #577e65 18%, transparent);
-  --app-success-text: #577e65;
+  --app-success-text: #5b906e;
   --app-success-border: color-mix(in srgb, #577e65 40%, transparent);
+
+  /* Soft rose for "bad / off track" status — distinct from --mat-sys-error which stays for form validation. */
+  --app-bad-text: #ffbcaf;
 }
 
 .app-field {
@@ -240,7 +243,7 @@ body {
 }
 
 .app-choice-tag {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
   font-size: 0.75rem;
   color: color-mix(in srgb, var(--app-accent) 80%, white);
   letter-spacing: 1px;
@@ -267,6 +270,15 @@ body {
   line-height: 1.4;
   padding: 8px 12px;
   max-width: 240px;
+  background: color-mix(in srgb, var(--mat-sys-surface-container-high) 95%, transparent) !important;
+  color: var(--mat-sys-on-surface) !important;
+  border: 1px solid color-mix(in srgb, white 10%, transparent);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.mat-mdc-tooltip.app-tooltip-warn .mdc-tooltip__surface {
+  color: var(--mat-sys-error) !important;
+  border-color: color-mix(in srgb, var(--mat-sys-error) 35%, transparent);
 }
 
 .cdk-overlay-dark-backdrop {
@@ -314,6 +326,47 @@ body {
   }
 }
 
+.mat-calendar-body-disabled,
+.mat-calendar-body-disabled .mat-calendar-body-cell-content {
+  cursor: not-allowed !important;
+}
+
+.mat-calendar-body-selected.mat-calendar-body-today{
+  box-shadow: none!important;
+}
+.mat-calendar-body-cell.hist-day-good .mat-calendar-body-cell-content {
+  background: color-mix(in srgb, var(--app-success-text) 25%, transparent);
+  color: #3bab63;
+  border: 1px solid #46835c !important;
+  &.mat-calendar-body-selected{
+      border: 2px solid #46835c !important;      
+  } 
+}
+
+.mat-calendar-body-cell.hist-day-bad .mat-calendar-body-cell-content {
+  background: color-mix(in srgb, var(--app-bad-text) 25%, transparent);
+  color: var(--app-bad-text);
+   border: 1px solid  var(--app-bad-text)!important;
+    &.mat-calendar-body-selected{
+      border: 2px solid  var(--app-bad-text)!important;
+  } 
+}
+
+.mat-calendar-body-cell.hist-day-caution .mat-calendar-body-cell-content {
+  background: rgba(245, 158, 11, 0.12);
+  color: #ffc03c;
+  border: 1px solid   #ffc03c!important;
+    &.mat-calendar-body-selected{
+        border: 2px solid  #ffc03c!important;        
+    }
+}
+
+.mat-calendar-body-cell.hist-day-logged .mat-calendar-body-cell-content {
+  background: color-mix(in srgb, white 14%, transparent);
+  color: var(--mat-sys-on-surface);
+  border: 1px solid  transparent;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -322,7 +375,7 @@ body {
   text-transform: uppercase;
   color: var(--mat-sys-on-surface);
   line-height: 1;
-  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Menlo, Consolas, monospace;
+  font-family: 'Roboto Mono', 'SF Mono', Menlo, Consolas, monospace;
 
   &.brand-lg {
     .brand-mark {

@@ -1,6 +1,8 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AuthService } from '../../core/services/auth.service';
 import { CalorieCalculatorService } from '../../core/services/calorie-calculator.service';
@@ -42,7 +44,7 @@ interface MacrosOption {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, DecimalPipe],
+  imports: [FormsModule, DecimalPipe, MatIconModule, MatTooltipModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -115,6 +117,29 @@ export class ProfileComponent {
       goal: this.goal(),
       goalRate: this.goalRate()
     })
+  );
+
+  readonly rawDailyTarget = computed(() =>
+    this.calculator.rawDailyTarget({
+      gender: this.gender(),
+      weight: this.weight(),
+      height: this.height(),
+      age: this.age(),
+      activityLevel: this.activityLevel(),
+      goal: this.goal(),
+      goalRate: this.goalRate()
+    })
+  );
+
+  readonly floorApplied = computed(() => {
+    const raw = this.rawDailyTarget();
+    if (raw <= 0) return false;
+    const floor = this.calculator.floorForGender(this.gender());
+    return raw < floor;
+  });
+
+  readonly floorTooltip = computed(
+    () => `Safety minimum applied.\nCalculated target was ${this.rawDailyTarget()} kcal — below the safe lower limit.`
   );
 
   readonly currentMacros = computed(() => MACROS_PRESETS[this.macrosPreset()]);

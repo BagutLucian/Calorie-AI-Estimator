@@ -33,20 +33,22 @@
 
       @if (mode() === 'photo') {
         <div class="mode-panel">
-          @if (!imagePreview()) {
-            <label class="photo-drop">
-              <mat-icon>add_photo_alternate</mat-icon>
-              <span>Click to upload a photo</span>
-              <input type="file" accept="image/*" (change)="onImagePicked($event)" hidden />
-            </label>
-          } @else {
-            <div class="photo-preview-wrap">
+          <div class="photo-zone" [class.has-image]="imagePreview()">
+            @if (!imagePreview()) {
+              <label class="photo-drop">
+                <mat-icon>add_photo_alternate</mat-icon>
+                <span>Click to upload a photo</span>
+                <input type="file" accept="image/*" (change)="onImagePicked($event)" hidden />
+              </label>
+            } @else {
               <img class="photo-preview" [src]="imagePreview()" alt="Selected meal" />
-              <button type="button" class="photo-remove" (click)="clearImage()">
+              <button type="button" class="photo-remove" (click)="clearImage()" aria-label="Remove photo">
                 <mat-icon>close</mat-icon>
               </button>
-            </div>
+            }
+          </div>
 
+          @if (imagePreview()) {
             @if (analyzing()) {
               <div class="loader">
                 <mat-progress-spinner mode="indeterminate" diameter="32" />
@@ -162,17 +164,17 @@
             type="number"
             min="0"
             [ngModel]="caloriesPer100g()"
-            (ngModelChange)="caloriesPer100g.set($event)"
+            (ngModelChange)="onKcalInput($event)"
             name="caloriesPer100g"
           />
           <button
             type="button"
             class="info-icon"
-            [class.ok]="theoreticalKcal() !== null && !kcalMismatch()"
-            [class.warn]="kcalMismatch()"
+            [class.ok]="isExactMatch()"
+            [class.warn]="theoreticalKcal() !== null && caloriesPer100g() != null && !isExactMatch()"
             [matTooltip]="kcalTooltip()"
             matTooltipPosition="left"
-            matTooltipClass="app-tooltip-multiline"
+            [matTooltipClass]="(theoreticalKcal() !== null && caloriesPer100g() != null && !isExactMatch()) ? 'app-tooltip-multiline app-tooltip-warn' : 'app-tooltip-multiline'"
             aria-label="Macros vs kcal info"
           >
             <mat-icon>info_outline</mat-icon>
@@ -238,6 +240,13 @@
         <div class="total">
           <span class="total-label">Total for this meal</span>
           <span class="total-value">{{ totalCalories() | number:'1.0-0' }}<span class="total-unit">kcal</span></span>
+          <div class="total-macros">
+            <span><span class="tm-label">P</span> {{ totalMacros().protein }}<span class="tm-unit">g</span></span>
+            <span class="tm-sep">·</span>
+            <span><span class="tm-label">C</span> {{ totalMacros().carbs }}<span class="tm-unit">g</span></span>
+            <span class="tm-sep">·</span>
+            <span><span class="tm-label">F</span> {{ totalMacros().fats }}<span class="tm-unit">g</span></span>
+          </div>
         </div>
       </div>
 
@@ -248,16 +257,37 @@
   </div>
 
   <div mat-dialog-actions class="dialog-actions">
-    <button type="button" class="app-btn app-btn-secondary" (click)="cancel()" [disabled]="saving()">
-      Cancel
-    </button>
-    <button
-      type="button"
-      class="app-btn app-btn-primary"
-      [disabled]="!canSave() || saving()"
-      (click)="save()"
-    >
-      {{ saving() ? 'Saving…' : 'Save meal' }}
-    </button>
+    <div class="meal-date-row">
+      <span class="meal-date-label">For:</span>
+      <button
+        type="button"
+        class="meal-date-trigger"
+        (click)="openDatePicker(dateInputEl)"
+      >
+        {{ mealDateLabel() }}
+      </button>
+      <input
+        #dateInputEl
+        type="date"
+        class="meal-date-input"
+        [max]="todayIso"
+        [value]="mealDate() ?? todayIso"
+        (change)="onMealDateChange($any($event.target).value)"
+      />
+    </div>
+
+    <div class="meal-actions-buttons">
+      <button type="button" class="app-btn app-btn-secondary" (click)="cancel()" [disabled]="saving()">
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="app-btn app-btn-primary"
+        [disabled]="!canSave() || saving()"
+        (click)="save()"
+      >
+        {{ saving() ? 'Saving…' : 'Save meal' }}
+      </button>
+    </div>
   </div>
 </div>

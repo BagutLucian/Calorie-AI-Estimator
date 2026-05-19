@@ -2,6 +2,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { CalorieCalculatorService } from '../../core/services/calorie-calculator.service';
 import { ProfileService } from '../../core/services/profile.service';
@@ -42,7 +44,7 @@ interface MacrosOption {
 @Component({
   selector: 'app-welcome-wizard',
   standalone: true,
-  imports: [FormsModule, DecimalPipe],
+  imports: [FormsModule, DecimalPipe, MatIconModule, MatTooltipModule],
   templateUrl: './welcome-wizard.component.html',
   styleUrl: './welcome-wizard.component.scss'
 })
@@ -117,6 +119,28 @@ export class WelcomeWizardComponent {
       goal: this.goal(),
       goalRate: this.goalRate()
     })
+  );
+
+  readonly rawDailyTarget = computed(() =>
+    this.calculator.rawDailyTarget({
+      gender: this.gender(),
+      weight: this.weight(),
+      height: this.height(),
+      age: this.age(),
+      activityLevel: this.activityLevel(),
+      goal: this.goal(),
+      goalRate: this.goalRate()
+    })
+  );
+
+  readonly floorApplied = computed(() => {
+    const raw = this.rawDailyTarget();
+    if (raw <= 0) return false;
+    return raw < this.calculator.floorForGender(this.gender());
+  });
+
+  readonly floorTooltip = computed(
+    () => `Safety minimum applied.\nCalculated target was ${this.rawDailyTarget()} kcal — below the safe lower limit.`
   );
 
   readonly currentMacros = computed(() => MACROS_PRESETS[this.macrosPreset()]);

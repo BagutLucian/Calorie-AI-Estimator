@@ -43,6 +43,12 @@ export class AddMealDialogComponent {
   readonly fats = signal<number | null>(null);
   readonly weightInGrams = signal<number | null>(null);
 
+  /** ISO date (YYYY-MM-DD) for this meal. null = today. */
+  readonly mealDate = signal<string | null>(null);
+
+  /** True once the user has typed/cleared kcal explicitly. Stops the macro-driven auto-fill. */
+  private readonly kcalUserTouched = signal(false);
+
   // Photo path
   readonly selectedImage = signal<File | null>(null);
   readonly imagePreview = signal<string | null>(null);
@@ -90,6 +96,20 @@ export class AddMealDialogComponent {
     return Math.round((kcal * grams) / 100);
   });
 
+  /** Macros scaled to the actual portion — exactly what backend will save. */
+  readonly totalMacros = computed(() => {
+    const grams = this.weightInGrams();
+    if (grams == null || grams === 0) {
+      return { protein: 0, carbs: 0, fats: 0 };
+    }
+    const scale = grams / 100;
+    return {
+      protein: Math.round(((this.protein() ?? 0) * scale) * 10) / 10,
+      carbs: Math.round(((this.carbs() ?? 0) * scale) * 10) / 10,
+      fats: Math.round(((this.fats() ?? 0) * scale) * 10) / 10
+    };
+  });
+
   /** Atwater factors: 4 kcal/g for protein & carbs, 9 kcal/g for fat. */
   readonly theoreticalKcal = computed(() => {
     const p = this.protein();
@@ -107,15 +127,23 @@ export class AddMealDialogComponent {
     return Math.abs(actual - theo) / theo > 0.15;
   });
 
+  readonly isExactMatch = computed(() => {
+    const theo = this.theoreticalKcal();
+    const actual = this.caloriesPer100g();
+    if (theo === null || actual == null) return false;
+    return Math.abs(actual - theo) < 1;
+  });
+
   readonly kcalTooltip = computed(() => {
     const theo = this.theoreticalKcal();
     if (theo === null) {
       return '4·P + 4·C + 9·F kcal\n(per 100g)';
     }
-    if (this.kcalMismatch()) {
-      return `Expected ≈ ${theo} kcal\n (4·P + 4·C + 9·F)`;
+    const actual = this.caloriesPer100g();
+    if (actual == null || this.isExactMatch()) {
+      return `4·P + 4·C + 9·F\n= ${theo} kcal`;
     }
-    return `4·P + 4·C + 9·F\n= ${theo} kcal`;
+    return `Expected ≈ ${theo} kcal\n(4·P + 4·C + 9·F)`;
   });
 
   readonly canSave = computed(() =>
@@ -125,11 +153,12 @@ export class AddMealDialogComponent {
   );
 
   constructor() {
-    // Auto-fill kcal/100g from macros when user typed all 3 macros and kcal is still empty.
+    // Auto-fill kcal/100g from macros only if user hasn't touched the field yet.
     effect(() => {
       const theo = this.theoreticalKcal();
       const currentKcal = untracked(() => this.caloriesPer100g());
-      if (theo !== null && currentKcal === null) {
+      const touched = untracked(() => this.kcalUserTouched());
+      if (theo !== null && currentKcal === null && !touched) {
         this.caloriesPer100g.set(theo);
       }
     });
@@ -137,6 +166,50 @@ export class AddMealDialogComponent {
 
   setMode(m: AddMode): void {
     this.mode.set(m);
+  }
+
+  onKcalInput(value: number | null): void {
+    this.kcalUserTouched.set(true);
+    this.caloriesPer100g.set(value);
+  }
+
+  readonly todayIso = MealService.todayIso();
+
+  readonly mealDateLabel = computed(() => {
+    const iso = this.mealDate() ?? this.todayIso;
+    if (iso === this.todayIso) return 'Today';
+
+    const d = new Date(iso + 'T00:00:00');
+    const yest = new Date();
+    yest.setDate(yest.getDate() - 1);
+    const yestIso = this.toIso(yest);
+    if (iso === yestIso) return 'Yesterday';
+
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  });
+
+  onMealDateChange(value: string): void {
+    if (!value) {
+      this.mealDate.set(null);
+      return;
+    }
+    this.mealDate.set(value === this.todayIso ? null : value);
+  }
+
+  openDatePicker(input: HTMLInputElement): void {
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+    } else {
+      input.focus();
+      input.click();
+    }
+  }
+
+  private toIso(d: Date): string {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
   }
 
   // --- Photo ---
@@ -214,6 +287,10 @@ export class AddMealDialogComponent {
       carbs: this.carbs() ?? 0,
       fats: this.fats() ?? 0
     };
+    const date = this.mealDate();
+    if (date) {
+      payload.date = date;
+    }
 
     this.mealService.save(payload).subscribe({
       next: () => {

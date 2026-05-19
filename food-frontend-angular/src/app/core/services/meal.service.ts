@@ -19,6 +19,11 @@ export class MealService {
     return this.http.get<Meal[]>(`${this.apiUrl}/my-history/week`);
   }
 
+  range(startIso: string, endIso: string): Observable<Meal[]> {
+    const params = new HttpParams().set('start', startIso).set('end', endIso);
+    return this.http.get<Meal[]>(`${this.apiUrl}/my-history/range`, { params });
+  }
+
   save(meal: MealSavePayload): Observable<string> {
     return this.http.post(`${this.apiUrl}/save`, meal, { responseType: 'text' });
   }
